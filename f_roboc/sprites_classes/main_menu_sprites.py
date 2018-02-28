@@ -43,3 +43,33 @@ class MainMenuButtons(MainSprite):
     def update(self):
         """Update the sprite."""
         self._change_image_if_overflew()
+
+
+class LostConnexion(MainSprite):
+    """This class show an error message."""
+
+    def __init__(self, images, button_coords, name):
+        """Initialize the class."""
+        super().__init__()
+
+        self.name = name
+
+        self.image = images[0]
+
+        self.coords = (0, 0)
+        self._init_rect_position()
+
+        self.button = MainMenuButtons(
+            images[2],
+            images[1],
+            button_coords,
+            'ok...')
+
+    def update(self):
+        """Update the sprite."""
+        if not self.activated:
+            return
+
+        self.button.update()
+
+        self.image.blit(self.button.image, self.button.coords)

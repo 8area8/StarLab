@@ -62,10 +62,7 @@ class ServerConnection:
 
     def connect(self):
         """Try to connect to the server."""
-        try:
-            self._socket.connect((self._hote, self._port))
-        except ConnectionRefusedError:
-            raise
+        self._socket.connect((self._hote, self._port))
 
         print("\nconnected to the port: {}".format(self._port))
 

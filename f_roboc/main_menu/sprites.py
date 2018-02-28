@@ -6,6 +6,7 @@ import constants.game_sizes as csize
 
 from f_roboc.sprites_classes.main_menu_sprites import MainMenuLoop
 from f_roboc.sprites_classes.main_menu_sprites import MainMenuButtons
+from f_roboc.sprites_classes.main_menu_sprites import LostConnexion
 
 
 class SpritesController:
@@ -25,11 +26,11 @@ class SpritesController:
             (266 * csize.UPSCALE, 250 * csize.UPSCALE),
             name='commencer')
 
-        self.aide = MainMenuButtons(
+        self.rejoindre = MainMenuButtons(
             self.images['buttons'][2],
             self.images['buttons'][3],
             (266 * csize.UPSCALE, 286 * csize.UPSCALE),
-            name='aide')
+            name='rejoindre')
 
         self.quitter = MainMenuButtons(
             self.images['buttons'][4],
@@ -40,5 +41,10 @@ class SpritesController:
         self.button_list = pygame.sprite.Group()
         self.button_list.add(
             self.commencer,
-            self.aide,
+            self.rejoindre,
             self.quitter)
+
+        self.lost_connexion = LostConnexion(
+            self.images['error'],
+            (263 * csize.UPSCALE, 191 * csize.UPSCALE),
+            name='lost_connexion')

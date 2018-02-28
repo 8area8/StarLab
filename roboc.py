@@ -81,8 +81,11 @@ def _change_interface(interface, images, connection):
     if not interface.go_to:
         return interface
 
-    elif interface.go_to == 'main_menu':
-        interface = MainMenu(images["main_menu"])
+    elif 'main_menu' in interface.go_to:
+        if '-LostConnexion' in interface.go_to:
+            interface = MainMenu(images['main_menu'], connection, error=True)
+        else:
+            interface = MainMenu(images["main_menu"], connection)
 
     elif interface.go_to == 'select_level':
         interface = SelectLevel(images["select_level"])

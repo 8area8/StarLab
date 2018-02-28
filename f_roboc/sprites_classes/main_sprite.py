@@ -28,6 +28,9 @@ class MainSprite(pygame.sprite.Sprite):
         self._passive_image = None
         self._broken_image = None
 
+        self._image_copy = None
+        self._second_image = None
+
         # POSITION
         self.coords = (0, 0)
         # CALL _INIT_RECT_POSITION NOW
@@ -40,6 +43,7 @@ class MainSprite(pygame.sprite.Sprite):
 
         # ACTIVATION
         self._activated_animation = False
+        self.activated = False
 
     @property
     def overflew(self):
@@ -111,13 +115,13 @@ class MainSprite(pygame.sprite.Sprite):
             else:
                 self._index -= 1
 
-    def _activates_the_animation(self):
+    def activates_the_animation(self):
         """Active the animation."""
         self._index = 0
         self._current_time = 0.0
         self._activated_animation = True
 
-    def _desactivates_the_animation(self):
+    def desactivates_the_animation(self):
         """Desactivates the sprite."""
         self._index = 0
         self.image = self._no_image
@@ -135,3 +139,10 @@ class MainSprite(pygame.sprite.Sprite):
         else:
             if self.image is not self._passive_image:
                 self.image = self._passive_image
+
+    def _add_image_to_the_background(self, coords):
+        """Add a new image to the first image."""
+        if self._image_copy != self.image:
+            self._image_copy = pygame.surface.copy(self.image)
+
+        self._image_copy.blit(self._second_image, coords)

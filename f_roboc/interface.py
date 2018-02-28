@@ -7,11 +7,13 @@ class Interface:
     def __init__(self):
         """Initialize the class."""
         self.go_to = ""
-        self.name = NotImplemented
+        self.name = None
 
-        self.connection = NotImplemented
-        self.sprt = NotImplemented
-        self.events = NotImplemented
+        self.connection = None
+        self.sprt = None
+        self.events = None
+
+        self._game_init = False
 
         self._current_time = 0.0
 
@@ -27,7 +29,7 @@ class Interface:
         """Draw the sprites."""
         raise NotImplementedError
 
-    def transfer_datas(self, server_connection):
+    def transfer_datas(self):
         """Collect and send datas from the server."""
         raise NotImplementedError
 
@@ -44,12 +46,11 @@ class Interface:
                 transfer_datas(self)
             except OSError as e:
 
-                print(f"Failed connection.\nError: [e]")
-
-                if self.name != 'main_menu':
+                if self.name != 'main_menu' and self.name != 'select_level':
+                        print(f"Failed connection.\nError: {e}")
                         self.go_to = 'main_menu -LostConnexion'
 
-                self.connexion.close()
+                self.connection.close()
 
         return wrapper
     _secured_connection = staticmethod(_secured_connection)
@@ -65,6 +66,6 @@ class Interface:
     def _is_timer_over(self, tenths_of_second):
         """Return True if _current_time is over tenths_of_seconds."""
         if self._current_time >= tenths_of_second:
-            self.refresh_timer(set_zero=True)
+            self._refresh_timer(set_zero=True)
             return True
         return False
