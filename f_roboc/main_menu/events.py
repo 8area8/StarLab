@@ -15,7 +15,7 @@ class EventsController:
         self.button_list = button_list
         self.lost_connexion = lost_connexion
 
-    def start(self, event, mouse):
+    def start(self, event, mouse, game_init):
         """On lance le testes d'évènements."""
         if event.type == MOUSEBUTTONDOWN and event.button == 1:
 
@@ -29,7 +29,8 @@ class EventsController:
                         elif button.name == 'commencer':
                             self.go_to = 'select_level'
                         elif button.name == 'rejoindre':
-                            self.go_to = 'game'
+                            if game_init:
+                                self.go_to = 'game'
 
             else:
                 if self.lost_connexion.button.rect.collidepoint(mouse):

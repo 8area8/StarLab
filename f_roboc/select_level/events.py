@@ -9,8 +9,8 @@ class EventsController:
 
     def __init__(self, button_list, not_imlplemented, map_buttons):
         """Initialisation."""
-        self.go_to_game = False
-        self.back_to_main = False
+        self.go_to = ""
+
         self.map_content = None
         self.map_name = None
 
@@ -25,7 +25,7 @@ class EventsController:
             for button in self.button_list:
                 if button.rect.collidepoint(mouse):
                     if button.name == 'return':
-                        self.back_to_main = True
+                        self.go_to = 'main_menu'
                     elif button.name == 'left_arrow':
                         button.in_animation = True
                         self.not_imlplemented.activated = True
@@ -37,6 +37,6 @@ class EventsController:
                 pos = mouse
                 pos = pos[0] - 259 * 2, pos[1] - 160 * 2
                 if button.rect.collidepoint(pos):
-                    self.go_to_game = True
+                    self.go_to = 'game'
                     self.map_content = button.contents
                     self.map_name = button.text

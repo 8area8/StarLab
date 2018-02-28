@@ -27,7 +27,7 @@ class MainMenu(Interface):
 
     def start_events(self, event, mouse):
         """Call of events."""
-        self.events.start(event, mouse)
+        self.events.start(event, mouse, self._game_init)
 
     @Interface._secured_connection
     def transfer_datas(self):
@@ -41,18 +41,6 @@ class MainMenu(Interface):
         elif not self._game_init:
             self._ask_if_game_init_is_running()
 
-    def _ask_if_game_init_is_running(self):
-        """Ask to the server if a game is in initialization.
-
-        If it is, _game_init will be True.
-        """
-        msg = self.connection.receive()
-        if 'game_init_yes' in msg:
-            self._game_init = True
-            return
-
-        self.connection.send('is_game_init')
-
     def update(self):
         """Sprite update."""
         self._refresh_timer()
@@ -60,7 +48,7 @@ class MainMenu(Interface):
         self.go_to = self.events.go_to
 
         if not self.sprt.lost_connexion.activated:
-            self.sprt.button_list.update()
+            self.sprt.button_list.update(self._game_init)
         self.sprt.background.update()
         self.sprt.lost_connexion.update()
 

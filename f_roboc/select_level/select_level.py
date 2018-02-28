@@ -1,20 +1,20 @@
-"""Classe HUB de la partie Select_level."""
+"""This module contains the select level HUB interface."""
 
-import constants.game_sizes as cst
+import constants.game_sizes as csizes
 
+from f_roboc.interface import Interface
 from f_roboc.select_level.sprites import SpritesController as SpritesController
 from f_roboc.select_level.events import EventsController as EventsController
 
 
-class SelectLevel:
-    """Classe qui gère la selection de niveaux."""
+class SelectLevel(Interface):
+    """This class rules the level selection."""
 
-    def __init__(self, imgs):
-        """Initialisation."""
-        self.to_select_level = False
-        self.to_game = False
-        self.to_main_menu = False
+    def __init__(self, imgs, connection):
+        """Initialize the class."""
+        super().__init__()
 
+        self.connection = connection
         self.sprt = SpritesController(imgs)
         self.evt = EventsController(
             self.sprt.button_list,
@@ -23,28 +23,38 @@ class SelectLevel:
 
         self.nb_players = 2
 
-    def events(self, event, mouse):
-        """Appel les évènements propres à la classe."""
-        if self.evt.back_to_main:
-            self.to_main_menu = True
-        elif self.evt.go_to_game:
-            self.to_game = True
+    def start_events(self, event, mouse):
+        """Call events class."""
         self.evt.start(event, mouse)
 
+    @Interface._secured_connection
+    def transfer_datas(self):
+        """Connect to the server and try to know if a game is running."""
+        if not self._is_timer_over(1000):
+            return
+
+        if not self.connection.connected:
+            self.connection.connect()
+
+        elif not self._game_init:
+            self._ask_if_game_init_is_running()
+
     def update(self):
-        """Mise à jour."""
+        """Sprites update."""
+        self.go_to = self.evt.go_to
+
         self.sprt.button_list.update()
         self.sprt.text_button_list.update()
         self.sprt.ponct_sprites.update()
 
     def draw(self):
-        """Dessin des éléments de SelectLevel."""
+        """Sprites drawing."""
         self.sprt.main_surface.blit(self.sprt.background["bg"], (0, 0))
 
         self.sprt.text_button_list.draw(self.sprt.text_list_surface)
         self.sprt.main_surface.blit(
             self.sprt.text_list_surface, (
-                259 * cst.UPSCALE, 160 * cst.UPSCALE))
+                259 * csizes.UPSCALE, 160 * csizes.UPSCALE))
 
         self.sprt.button_list.draw(self.sprt.main_surface)
         self.sprt.ponct_sprites.draw(self.sprt.main_surface)

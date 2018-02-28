@@ -1,18 +1,16 @@
-"""Traitement des cartes."""
+"""List all game's maps."""
 
 import glob
 
 
 def list_maps():
-    """List les maps présentes dans le dossier 'map'.
+    """List all maps in 'maps' folder.
 
-    Retourne ensuite le nom de la map, et son contenu.
+    Return the name and the content of each map.
 
-    Attention: seul les cinq premières maps seront
-    prises en compte (par soucis de simplicité)!
+    !! Only the 5 first maps will be read !!
     """
-    # maps_path = glob.glob('maps/*.txt')
-    maps_path = glob.glob('f_roboc/maps/*.txt')
+    maps_path = glob.glob('f_roboc/assets/maps/*.txt')
     maps_name = []
     contents = []
 
@@ -24,9 +22,9 @@ def list_maps():
             too_much_maps = True
             break
 
-        file_content = import_map(file)
+        file_content = _import_map_from(file)
 
-        if valide_file(file_content, file[13:-4], i):
+        if _is_valid(file_content, file[13:-4], i):
             maps_name.append(file[13:-4])
             contents.append(file_content)
         else:
@@ -35,10 +33,10 @@ def list_maps():
     return maps_name, contents, too_much_maps, invalide_files
 
 
-def import_map(file):
-    """Import le contenu du fichier map choisit.
+def _import_map_from(file):
+    """Import the content of  the selected file.
 
-    Retourne une liste.
+    Return a list.
     """
     contents = []
 
@@ -52,28 +50,28 @@ def import_map(file):
     return contents
 
 
-def valide_file(file, name, i):
-    """Test si le fichier est valide."""
+def _is_valid(file, name, i):
+    """Test if the file is valid."""
     possibles_keys = ['O', ' ', '.', 'T', 'V']
     teleporters = 0
     start_path = 0
     victory = 0
     if len(file) != 9:
-        error_msg(name, i, "la map ne fait pas 9 cases de haut.", file)
+        error_msg(name, i, "the map is not 9 boxes high.", file)
         return False
     for line in file:
         if len(line) != 20:
             error_msg(name, i,
-                      "Une ligne de la map ne fait pas 20 cases de long.",
+                      "A line of the map is not 20 boxes long.",
                       file)
             return False
         for key in line:
             if key not in possibles_keys:
                 error_msg(name, i,
-                          'un ou plusieurs caracteres sont invalides.',
+                          'one or more characters are invalid.',
                           file)
-                print("caractere invalide: '{0}'".format(key))
-                print("caracteres possibles: 'O', ' ', '.', 'T' et 'V'.")
+                print("invalid character: '{0}'".format(key))
+                print("possible characters: 'O', ' ', '.', 'T' et 'V'.")
                 return False
             if key == 'T':
                 teleporters += 1
@@ -84,18 +82,18 @@ def valide_file(file, name, i):
 
     if teleporters != 2 and teleporters != 0:
         error_msg(name, i,
-                  "le nombre de teleporters ('T') doit etre egal a 0 ou 2.",
+                  "the number of teleporters ('T') must be equal to 0 or 2.",
                   file)
-        print('nombre de teleporters: {0}'.format(teleporters))
+        print('number of teleporters: {0}'.format(teleporters))
         return False
     """if start_path < 4:
         error_msg(name, i,
-                  "la map doit posseder au moins 4 caractères de type '.'",
+                  "the map must have at least 4 characters of type '.'",
                   file)
         return False"""
     if victory != 1:
         error_msg(name, i,
-                  "la map doit posseder un seul caractère de type 'V'.",
+                  "the map must have a single type character 'V'.",
                   file)
         return False
 
@@ -103,11 +101,11 @@ def valide_file(file, name, i):
 
 
 def error_msg(map_name, i, message, file):
-    """Définit les messages d'erreur affichés dans le terminal."""
+    """Display error messages in the terminal."""
     i += 1
-    print("\nErreur sur la map {0}, titre '{1}'.".format(i, map_name))
+    print("\nError on the map {0}, title '{1}'.".format(i, map_name))
     print(message)
-    print("Details de la map:")
+    print("Map Details:")
     for line in file:
         good_line = ''.join(line)
         print(good_line)

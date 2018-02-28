@@ -40,8 +40,28 @@ class MainMenuButtons(MainSprite):
         self.coords = coords
         self._init_rect_position()
 
-    def update(self):
+    def update(self, *arg):
         """Update the sprite."""
+        self._change_image_if_overflew()
+
+
+class joinButton(MainMenuButtons):
+    """Special class for join's button."""
+
+    def __init__(self, broken_image, active_image,
+                 passive_image, coords, name):
+        """Init the class."""
+        super().__init__(active_image, passive_image, coords, name)
+
+        self._broken_image = broken_image
+        self.image = self._broken_image
+
+    def update(self, game_init):
+        """Update the sprite."""
+        if not game_init:
+            self.image = self._broken_image
+            return
+
         self._change_image_if_overflew()
 
 
