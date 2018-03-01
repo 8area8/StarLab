@@ -24,8 +24,8 @@ def list_maps():
 
         file_content = _import_map_from(file)
 
-        if _is_valid(file_content, file[13:-4], i):
-            maps_name.append(file[13:-4])
+        if _is_valid(file_content, file[20:-4], i):
+            maps_name.append(file[20:-4])
             contents.append(file_content)
         else:
             invalide_files = True

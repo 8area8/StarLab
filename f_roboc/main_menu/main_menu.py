@@ -21,6 +21,7 @@ class MainMenu(Interface):
                                        self.sprt.lost_connexion)
 
         self.connection.close()  # Debugge a freeze_screen the 1rst connection.
+        self._game_init = False
 
         if error:
             self.sprt.lost_connexion.activated = True
@@ -40,6 +41,18 @@ class MainMenu(Interface):
 
         elif not self._game_init:
             self._ask_if_game_init_is_running()
+
+    def _ask_if_game_init_is_running(self):
+        """Ask to the server if a game is in initialization.
+
+        If it is, _game_init will be True.
+        """
+        msg = self.connection.receive()
+        if 'game_init_yes' in msg:
+            self._game_init = True
+            return
+
+        self.connection.send('is_game_init')
 
     def update(self):
         """Sprite update."""

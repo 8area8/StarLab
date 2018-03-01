@@ -1,6 +1,7 @@
 """This module contains the main_menu's sprites classes."""
 
 from f_roboc.sprites_classes.main_sprite import MainSprite
+from f_roboc.sprites_classes.main_sprite import Button
 
 
 class MainMenuLoop(MainSprite):
@@ -24,28 +25,7 @@ class MainMenuLoop(MainSprite):
         self._update_image_from_images()
 
 
-class MainMenuButtons(MainSprite):
-    """Rule the main menu's buttons."""
-
-    def __init__(self, active_image, passive_image, coords, name):
-        """Initialize the class."""
-        super().__init__()
-
-        self.name = name
-
-        self.image = active_image
-        self._active_image = active_image
-        self._passive_image = passive_image
-
-        self.coords = coords
-        self._init_rect_position()
-
-    def update(self, *arg):
-        """Update the sprite."""
-        self._change_image_if_overflew()
-
-
-class joinButton(MainMenuButtons):
+class joinButton(Button):
     """Special class for join's button."""
 
     def __init__(self, broken_image, active_image,
@@ -79,7 +59,7 @@ class LostConnexion(MainSprite):
         self.coords = (0, 0)
         self._init_rect_position()
 
-        self.button = MainMenuButtons(
+        self.button = Button(
             images[2],
             images[1],
             button_coords,

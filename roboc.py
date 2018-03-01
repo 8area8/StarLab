@@ -88,7 +88,7 @@ def _change_interface(interface, images, connection):
             interface = MainMenu(images["main_menu"], connection)
 
     elif interface.go_to == 'select_level':
-        interface = SelectLevel(images["select_level"])
+        interface = SelectLevel(images["select_level"], connection)
 
     elif interface.go_to == 'game':
         _check_if_create_or_join_the_game(interface, connection)

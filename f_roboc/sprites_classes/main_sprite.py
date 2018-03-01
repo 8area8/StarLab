@@ -115,17 +115,19 @@ class MainSprite(pygame.sprite.Sprite):
             else:
                 self._index -= 1
 
-    def activates_the_animation(self):
-        """Active the animation."""
+    def activate(self):
+        """Active the sprite."""
         self._index = 0
         self._current_time = 0.0
         self._activated_animation = True
+        self.activated = True
 
-    def desactivates_the_animation(self):
+    def desactivate(self):
         """Desactivates the sprite."""
         self._index = 0
         self.image = self._no_image
         self._activated_animation = False
+        self.activated = False
 
     def _update_image_from_images(self):
         """Update the current image according to the index."""
@@ -146,3 +148,48 @@ class MainSprite(pygame.sprite.Sprite):
             self._image_copy = pygame.surface.copy(self.image)
 
         self._image_copy.blit(self._second_image, coords)
+
+
+class Button(MainSprite):
+    """Simple application for buttons."""
+
+    def __init__(self, active_image, passive_image, coords, name):
+        """Initialize the class."""
+        super().__init__()
+
+        self.name = name
+
+        self.image = active_image
+        self._active_image = active_image
+        self._passive_image = passive_image
+
+        self.coords = coords
+        self._init_rect_position()
+
+    def update(self, *arg):
+        """Update the sprite."""
+        self._change_image_if_overflew()
+
+
+class ButtonPlusClick(Button):
+    """Application for button who has an animation if we click on."""
+
+    def __init__(self, pushed_image, active_image, passive_image,
+                 coords, name, max_timer=100):
+        """Initialize the class."""
+        super().__init__(active_image, passive_image, coords, name)
+
+        self._pushed_image = pushed_image
+        self.max_timer = max_timer
+
+    def update(self):
+        """Update the sprite."""
+        if self.activated:
+            self.image = self._pushed_image
+            self._call_method_after_timer(self.desactivate, self.max_timer)
+        else:
+            self._change_image_if_overflew()
+
+    def desactivate(self):
+        """Desativate the activated variable."""
+        self.activated = False

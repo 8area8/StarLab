@@ -8,7 +8,7 @@ class SimpleServer:
 
     def __init__(self, main_connection, connected_clients):
         """Initialize the server."""
-        self.go_to_game_server = False
+        self.go_to = ''
 
         self.main_connection = main_connection
         self.connected_clients = connected_clients
@@ -21,8 +21,11 @@ class SimpleServer:
         client_to_read = []
         self._receive(client_to_read)
 
-        for client in client_to_read:
-            self._deal_and_send_to(client)
+        print(client_to_read)
+
+        if client_to_read:
+            for client in client_to_read:
+                self._deal_and_send_to(client)
 
     def _receive(self, client_to_read):
         """Receive datas from the clients."""

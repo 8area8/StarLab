@@ -12,8 +12,7 @@ class ServerConnection:
         self._hote = "localhost"
         self._port = 12800
 
-        self._socket = socket.socket(
-            socket.AF_INET, socket.SOCK_STREAM)
+        self._socket = socket.socket()
 
     @property
     def connected(self):
@@ -24,6 +23,10 @@ class ServerConnection:
             return False
         else:
             return True
+
+    def re_init(self):
+        """Re-initialize the socket."""
+        self._socket = socket.socket()
 
     def close(self):
         """Close the client."""

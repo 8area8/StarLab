@@ -7,7 +7,7 @@ from pygame.constants import MOUSEBUTTONDOWN
 class EventsController:
     """Class."""
 
-    def __init__(self, button_list, not_imlplemented, map_buttons):
+    def __init__(self, button_list, not_implemented, map_buttons):
         """Initialisation."""
         self.go_to = ""
 
@@ -15,10 +15,10 @@ class EventsController:
         self.map_name = None
 
         self.button_list = button_list
-        self.not_imlplemented = not_imlplemented
+        self.not_implemented = not_implemented
         self.map_buttons = map_buttons
 
-    def start(self, event, mouse):
+    def start(self, event, mouse, connected, game_launched):
         """On lance les testes d'évènements."""
         if event.type == MOUSEBUTTONDOWN and event.button == 1:
 
@@ -27,11 +27,14 @@ class EventsController:
                     if button.name == 'return':
                         self.go_to = 'main_menu'
                     elif button.name == 'left_arrow':
-                        button.in_animation = True
-                        self.not_imlplemented.activated = True
+                        button.activated = True
+                        self.not_implemented.activated = True
                     elif button.name == 'right_arrow':
-                        button.in_animation = True
-                        self.not_imlplemented.activated = True
+                        button.activated = True
+                        self.not_implemented.activated = True
+
+            if not connected or game_launched:
+                return
 
             for button in self.map_buttons:
                 pos = mouse

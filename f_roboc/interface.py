@@ -13,8 +13,6 @@ class Interface:
         self.sprt = None
         self.events = None
 
-        self._game_init = False
-
         self._current_time = 0.0
 
     def start_events(self, event, mouse):
@@ -45,27 +43,15 @@ class Interface:
             try:
                 transfer_datas(self)
             except OSError as e:
+                print(f"Failed connection.\nError: {e}")
 
                 if self.name != 'main_menu' and self.name != 'select_level':
-                        print(f"Failed connection.\nError: {e}")
-                        self.go_to = 'main_menu -LostConnexion'
+                    self.go_to = 'main_menu -LostConnexion'
 
                 self.connection.close()
-
+                self.connection.re_init()
         return wrapper
     _secured_connection = staticmethod(_secured_connection)
-
-    def _ask_if_game_init_is_running(self):
-        """Ask to the server if a game is in initialization.
-
-        If it is, _game_init will be True.
-        """
-        msg = self.connection.receive()
-        if 'game_init_yes' in msg:
-            self._game_init = True
-            return
-
-        self.connection.send('is_game_init')
 
     def _refresh_timer(self, set_zero=False):
         """Update the _current_time variable."""

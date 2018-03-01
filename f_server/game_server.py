@@ -11,6 +11,14 @@ from f_server import game_initiator as g_i
 import constants.find as csfind
 
 
+class GameServerInit:
+    """Class who initialize the game."""
+
+    def __init__(self):
+        """Initialize the class."""
+        pass
+
+
 class GameServer:
     """Main class."""
 

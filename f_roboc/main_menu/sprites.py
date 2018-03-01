@@ -5,7 +5,7 @@ import pygame
 import constants.game_sizes as csize
 
 from f_roboc.sprites_classes.main_menu_sprites import MainMenuLoop
-from f_roboc.sprites_classes.main_menu_sprites import MainMenuButtons
+from f_roboc.sprites_classes.main_sprite import Button
 from f_roboc.sprites_classes.main_menu_sprites import LostConnexion
 from f_roboc.sprites_classes.main_menu_sprites import joinButton
 
@@ -21,7 +21,7 @@ class SpritesController:
 
         self.background = MainMenuLoop(images["background"])
 
-        self.commencer = MainMenuButtons(
+        self.commencer = Button(
             self.images['buttons'][0],
             self.images['buttons'][1],
             (266 * csize.UPSCALE, 250 * csize.UPSCALE),
@@ -34,7 +34,7 @@ class SpritesController:
             (266 * csize.UPSCALE, 286 * csize.UPSCALE),
             name='rejoindre')
 
-        self.quitter = MainMenuButtons(
+        self.quitter = Button(
             self.images['buttons'][5],
             self.images['buttons'][6],
             (266 * csize.UPSCALE, 321 * csize.UPSCALE),

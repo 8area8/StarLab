@@ -2,7 +2,7 @@
 
 import pygame
 
-import constants.game_sizes as cst
+import constants.colors as cons_colors
 
 
 class TextButton(pygame.sprite.Sprite):
@@ -15,8 +15,8 @@ class TextButton(pygame.sprite.Sprite):
 
         self.activated = False
 
-        self.color = cst.find_color(color)
-        self.active_color = cst.find_color(active_color)
+        self.color = cons_colors.find_color(color)
+        self.active_color = cons_colors.find_color(active_color)
         self.size = size
         self.text = text
         self.absolute_x = absolute_x

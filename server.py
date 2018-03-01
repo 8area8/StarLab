@@ -15,7 +15,7 @@ class BaseServer:
         self.hote = ''
         self.port = 12800
 
-        self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.connexion = socket.socket()
         self.connexion.bind((self.hote, self.port))
         self.connexion.listen(5)
         print("The server listen now at the port: {}".format(self.port))
@@ -30,7 +30,7 @@ class BaseServer:
         """Run the main loop."""
         while self._running:
 
-            self._change_server_state(self._server)
+            self._change_server_state()
 
             try:
 
@@ -42,23 +42,24 @@ class BaseServer:
                 self.clients_sockets = []
                 self._server = SimpleServer(self.connexion,
                                             self.clients_sockets)
+                print('connection error.')
 
         self._close()
 
     def _add_clients(self):
         """Add news clients to the server.
 
-        For performances issues, i stop the clients connexions from 4 clients.
+        For performances issues, i stop the clients connexion after 4 clients.
         """
-        if len(self.clients_sockets) > 4:
+        if self.clients_sockets and len(self.clients_sockets) > 4:
             return
 
-        wanted_connexions, wlist, xlist = select.select(
-            [self.connexion], [], [], 0)
+        wanted_connexions, wlist, xlist = select.select([self.connexion],
+                                                        [], [], 0)
 
-        for connexion in wanted_connexions:
+        for new_connection in wanted_connexions:
 
-            conexion_to_client, connexion_infos = connexion.accept()
+            conexion_to_client, connexion_infos = new_connection.accept()
             self.clients_sockets.append(conexion_to_client)
 
             print('added connection (from server): {0}'.format(
@@ -66,11 +67,9 @@ class BaseServer:
 
     def _change_server_state(self):
         """Change the server's state if needed."""
-        if isinstance(self._server, SimpleServer):
-            if self._server.go_to_game:
-
-                self._server = GameServerInit(self.connexion,
-                                              self.clients_sockets)
+        if self._server.go_to == 'game':
+            self._server = GameServerInit(self.connexion,
+                                          self.clients_sockets)
 
     def _close(self):
         """Close the connection."""
