@@ -52,7 +52,7 @@ class ServerConnection:
         server_list = []
         try:
             server_list, wlist, xlist = select.select(
-                [self._socket], [], [], 0)
+                [self._socket], [], [], 0.01)
         except select.error:
             pass
         else:

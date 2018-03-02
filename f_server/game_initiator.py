@@ -8,18 +8,18 @@ def test_server_status(players, orders):
     for i, player in enumerate(players):
         msg = player["msg"]
 
-        if "in_game" in msg:
-            orders[i] += "in_game:True "
+        if "is_game_init" in msg:
+            orders[i] += "game_init_yes "
             orders[i] += "connected_clients:{} ".format(len(players))
 
 
 def test_game_info(players, orders, map_content):
-    """Voila."""
+    """Test and take the game informations."""
     for i, player in enumerate(players):
         msg = player["msg"]
 
         if "need_map" in msg:
-            orders[i] += "new_game:{},{}".format(len(players), map_content)
+            orders[i] += f"map:{map_content} nb_players:{len(players)}"
 
 
 def test_start_game(players, orders):
@@ -29,8 +29,7 @@ def test_start_game(players, orders):
 
         if "players?" in msg:
             orders[i] += "player_turn:1 players_ok "\
-                "player_number:{} nb_players:{}".\
-                format(player["number"], len(players))
+                f"player_number:{player['number']} nb_players:{len(players)}"
 
 
 def test_synchro(synchro, players):

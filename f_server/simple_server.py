@@ -2,38 +2,37 @@
 
 import select
 
+import constants.find as fd
+
 
 class SimpleServer:
     """The basic server, the first used."""
 
-    def __init__(self, main_connection, connected_clients):
+    def __init__(self, main_connection, client_sockets):
         """Initialize the server."""
         self.go_to = ''
 
         self.main_connection = main_connection
-        self.connected_clients = connected_clients
+        self.client_sockets = client_sockets
 
         self.nb_players = 0
         self.map_content = ""
 
     def run_a_turn(self):
         """Run server's instruction for a turn."""
-        client_to_read = []
-        self._receive(client_to_read)
+        self._receive_and_return()
 
-        print(client_to_read)
-
-        if client_to_read:
-            for client in client_to_read:
-                self._deal_and_send_to(client)
-
-    def _receive(self, client_to_read):
+    def _receive_and_return(self):
         """Receive datas from the clients."""
+        client_to_read = []
         try:
             client_to_read, wlist, xlist = select.select(
-                self.connected_clients, [], [], 0.05)
+                self.client_sockets, [], [], 0.05)
         except select.error:
             pass
+        else:
+            for client in client_to_read:
+                self._deal_and_send_to(client)
 
     def _deal_and_send_to(self, client):
         """Send datas to each client."""
@@ -46,15 +45,16 @@ class SimpleServer:
 
         print("Received: {0}".format(msg))
 
-        if "in_game" in msg:
-            new_msg = "in_game:False "
-            new_msg += "connected_clients:{}".format(
-                len(self.connected_clients))
+        if "is_game_init" in msg:
+            new_msg += "game_init_no "
 
-        if "new_game" in msg:
-            self.nb_players = int(msg[9])
-            self.map_content = msg[11:]
-            self.go_to_game_server = True
+        if "is_game_running" in msg:
+            new_msg += "game_running_no "
+
+        if "create_game" in msg:
+            self.nb_players = fd.find_number_after('nb_players:', msg)
+            self.map_content = fd.find_text_after('map:', msg)
+            self.go_to = 'init_game'
 
         if new_msg:
             new_msg = new_msg.encode()

@@ -4,6 +4,7 @@ import socket
 import select
 
 from f_server.game_server import GameServerInit
+from f_server.game_server import GameServer
 from f_server.simple_server import SimpleServer
 
 
@@ -23,8 +24,7 @@ class BaseServer:
         self._running = True
         self.clients_sockets = []
 
-        self._server = SimpleServer(self.connexion,
-                                    self.clients_sockets)
+        self._server = SimpleServer(self.connexion, self.clients_sockets)
 
     def run(self):
         """Run the main loop."""
@@ -42,7 +42,7 @@ class BaseServer:
                 self.clients_sockets = []
                 self._server = SimpleServer(self.connexion,
                                             self.clients_sockets)
-                print('connection error.')
+                print('Connection error.\n- Reinitialized the server. -')
 
         self._close()
 
@@ -59,17 +59,27 @@ class BaseServer:
 
         for new_connection in wanted_connexions:
 
-            conexion_to_client, connexion_infos = new_connection.accept()
-            self.clients_sockets.append(conexion_to_client)
+            client_socket, connexion_infos = new_connection.accept()
+            self.clients_sockets.append(client_socket)
 
             print('added connection (from server): {0}'.format(
                 connexion_infos))
 
     def _change_server_state(self):
         """Change the server's state if needed."""
-        if self._server.go_to == 'game':
-            self._server = GameServerInit(self.connexion,
-                                          self.clients_sockets)
+        if self._server.go_to == 'init_game':
+            nb_players = self.server.nb_players
+            map_content = self.server.map_content
+            self._server = GameServerInit(nb_players, map_content,
+                                          self.connexion, self.clients_sockets)
+
+        elif self._server.go_to == 'game':
+            map_content = self._server.map_content
+            self._server = GameServer(self._server.connection, map_content,
+                                      self.clients_sockets)
+
+        elif self._server.go_to == 'default':
+            self._server = SimpleServer(self.connexion, self.clients_sockets)
 
     def _close(self):
         """Close the connection."""

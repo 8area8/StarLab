@@ -28,12 +28,6 @@ class Game:
 
         self._orders = ""
         self._server_msg = ""
-        # on envoit les coordonnées du jeu.
-        if self.hote:
-            self._orders = g_i.return_game_infos(nb_players, map_contents)
-            self._clt.send(self._orders)
-        else:
-            self._map_contents = g_i.wait_game_infos(self._clt)
 
         self._have_players_infos = False
         self._start_game = False
