@@ -11,40 +11,6 @@ from f_server import game_initiator as g_i
 import constants.find as csfind
 
 
-class GameServerInit:
-    """Class who initialize the game."""
-
-    def __init__(self, nb_players, map_content,
-                 client_sockets, main_connection):
-        """Initialize the class."""
-        self.go_to = ''
-        self.nb_players = nb_players
-        self.map_content = map_content
-
-        self.connection = ConnectionController(nb_players, client_sockets,
-                                               main_connection)
-
-        self.empty_orders = list("" * nb_players)
-        self.orders = self.empty_orders[:]
-
-        self._part = 1
-
-    def run_a_turn(self):
-        """Run a turn in the main loop."""
-        if self._part == 1:
-            self._wait_for_players()
-        elif self._part == 2:
-            self._wait_for_synchronisation()
-        elif self._part == 3:
-            self._init_players()
-        elif self._part == 4:
-            self.go_to = 'game'
-
-    def _wait_for_players(self):
-        """Wait and add new players."""
-        pass
-
-
 class GameServer:
     """Main class."""
 
