@@ -3,7 +3,7 @@
 import socket
 import select
 
-from f_server.game_server import GameServerInit
+from f_server.game_server_init import GameServerInit
 from f_server.game_server import GameServer
 from f_server.simple_server import SimpleServer
 

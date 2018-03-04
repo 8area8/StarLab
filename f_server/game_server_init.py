@@ -90,35 +90,39 @@ class GameServerInit:
 
             self.synchronisation[i] = True
 
-        if False not in self.synchronisation:
+        if all(self.synchronisation):
             self._step = 3
 
     def _init_hereos_places(self):
-        """héhéhé."""
+        """Create a random spawn position for each hero.
+
+        Add the result in global_message.
+        """
         max_spawns = self._map.count(".")
         print(f"There are {max_spawns} spawners.")
-        number_list = []
 
-        for i, player in enumerate(self.players):
+        number_list = list(range(1, max_spawns))
 
-            while True:
-                n = random.randint(1, max_spawns)
-                if n in number_list:
-                    continue
-                break
-            print("n i equal to ", n)
+        for player in self.players:
 
-            number_list.append(n)
-            index = 0
-            for y in range(1, n + 1):
-                index = self._map.find(".", index)
-                index += 1
+            number = self._get_unique_number(number_list)
+            index = self._get_the_spawn_position(number)
 
-            string_number = "{}".format(index)
-            if index < 100:
-                string_number = "0" + string_number
-                if index < 10:
-                    string_number = "0" + string_number
+            # Create a string treatable version
+            str_spawn = ('0' for x in range(3) if index < 10**x) + str(index)
 
-            for y, order in enumerate(orders):
-                orders[y] += "player{}_place:".format(i + 1) + string_number + " "
+            self.connection.global_message += (f"player{player['digit']}"
+                                               f"_place:{str_spawn} ")
+
+    def _get_unique_number(self, number_list):
+        """Get a number in number_list and remove it from the list."""
+        n = random.choice(number_list)
+        number_list.remove(n)
+        print("n is equal to ", n)
+
+        return n
+
+    def _get_the_spawn_position(self, number):
+        """Return the spawn position from its number."""
+        index = 0
+        index = (index + 1 for x in self._map.find('.', index) if x <= number)

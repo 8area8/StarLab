@@ -39,20 +39,10 @@ class Connection:
         for player in self.players:
             player['to_send'] = ""
 
-    def send(self, message='private'):
-        """Send messages to players.
-
-        You can send privates messages (from "player['to_send']" key),
-        or one global message for all players (wich use 'global_message').
-
-        specify to message's parameter:
-            - 'private' for private sendings
-            - 'global' for global sendings
-        """
-        if message == 'global':
-            self._send_global_message()
-        else:
-            self._send_private_messages()
+    def send(self):
+        """Send messages to players."""
+        self._send_global_message()
+        self._send_private_messages()
 
     def _send_private_messages(self):
         """Send private messages for each player."""
