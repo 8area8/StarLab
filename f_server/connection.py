@@ -4,25 +4,24 @@ import select
 
 
 class Connection:
-    """Class."""
+    """Rule the connection between the server and clients."""
 
-    def __init__(self, nb_players, clients_sockets, socket):
+    def __init__(self, nb_players, client_sockets, socket):
         """Initialize the initialization."""
         self._nb_players = nb_players
 
         # SERVER AND CLIENTS SOCKETS
         self._socket = socket
-        self._clients_sockets = clients_sockets
+        self._clients_sockets = client_sockets
 
         # PLAYERS DATAS
         self.players = []
-        self.create_players_dicts(clients_sockets)
 
         self.global_message = ""
 
-    def create_players_dicts(self, clients_sockets):
-        """Crete."""
-        for i, socket in enumerate(clients_sockets):
+    def init_players(self, player_sockets):
+        """Initialize the player's list."""
+        for i, socket in enumerate(player_sockets):
             player = {
                 "socket": socket,
                 "raddr": socket.getpeername(),
@@ -38,6 +37,13 @@ class Connection:
 
         for player in self.players:
             player['to_send'] = ""
+
+    def send_to(self, client, message):
+        """Send a message to a client.
+
+        Used when we wait for new players.
+        """
+        client.send(message.encode())
 
     def send(self):
         """Send messages to players."""
@@ -70,20 +76,40 @@ class Connection:
             player['socket'].send(msg)
 
     def receive(self):
-        """Receive the player's messages."""
+        """Receive the client's messages."""
+        socket_list = (player['socket'] for player in self.players)
         self.clients_to_read = []
+
         try:
             self.clients_to_read, wlist, xlist = select.select(
-                self._clients_sockets, [], [], 0)
+                socket_list, [], [], 0)
         except select.error:
             pass
         else:
             for client, player in zip(self.clients_to_read, self.players):
-                if client is player["socket"]:
+                if client is not player["socket"]:
+                    continue
 
-                    msg = client.recv(1024)
-                    player["msg"] = msg.decode()
+                msg = client.recv(1024)
+                player["msg"] = msg.decode()
 
-                    if player["msg"]:
-                        print(f"\n recu de joueur {player['raddr']}:"
-                              f" {player['msg']}.")
+                if player["msg"]:
+                    print(f"\n received from player {player['raddr']}:"
+                          f" {player['msg']}.")
+
+    def receive_from_clients(self):
+        """Basic reveive from all clients."""
+        client_messages = []
+        client_to_read = []
+        try:
+            client_to_read, wlist, xlist = select.select(
+                self.client_sockets, [], [], 0.05)
+        except select.error:
+            pass
+        else:
+            for client in client_to_read:
+
+                message = client.recv(1024).decode()
+                client_messages.append((client, message))
+
+        return client_messages

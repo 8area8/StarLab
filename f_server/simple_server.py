@@ -54,6 +54,7 @@ class SimpleServer:
         if "create_game" in msg:
             self.nb_players = fd.find_number_after('nb_players:', msg)
             self.map_content = fd.find_text_after('map:', msg)
+            self.host_player = client
             self.go_to = 'init_game'
 
         if new_msg:

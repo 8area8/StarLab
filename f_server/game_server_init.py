@@ -8,29 +8,32 @@ from f_server.connection import Connection
 class GameServerInit:
     """Class who initialize the game."""
 
-    def __init__(self, nb_players, _map, client_sockets, socket):
+    def __init__(self, nb_players, _map, client_sockets, host_player, socket):
         """Initialize the class."""
         self.go_to = ''
 
         self.nb_players = nb_players
         self._map = _map
 
+        self.player_sockets = [host_player]
         self.connection = Connection(nb_players, client_sockets, socket)
-        self.players = self.connection.players
+        self.players = None
 
-        self._step = 1
+        self.__step = 1
         self.synchronisation = [False for x in range(len(nb_players))]
 
     def run_a_turn(self):
         """Run a turn in the main loop."""
-        self.connection.re_initialize_server_messages()
-        self.connection.receive()
-
         if self._step == 1:
             self._return_the_initialization_status()
             self._wait_for_players()
+            return
 
-        elif self._step == 2:
+        self.connection.re_initialize_server_messages()
+        self.connection.receive()
+
+        if self._step == 2:
+            self._send_map_and_nb_players()
             self._wait_for_synchronisation()
 
         elif self._step == 3:
@@ -41,10 +44,38 @@ class GameServerInit:
 
         self.connection.send()
 
+    @property
+    def _step(self):
+        """Unused 'get' property."""
+        return self.__step
+
+    @_step.setter
+    def _step(self, value):
+        """Just a print who advertise me when self.__step change."""
+        self.__step = value
+        print("step is now", self._step)
+
     def _wait_for_players(self):
         """Wait and add new players."""
-        if len(self.client_sockets) < self.nb_players:
-            pass
+        if len(self.player_sockets) < self.nb_players:
+
+            client_messages = self.connection.receive_from_clients()
+            for client, message in client_messages:
+                if 'joining_game' not in message:
+                    continue
+
+                self.player_sockets.append(client)
+                break
+        else:
+            self._init_players_connection()
+            self._step = 2
+
+    def _init_players_connection(self):
+        """Initialize the players."""
+        self.connection.init_players(self.nb_players,
+                                     self.player_sockets,
+                                     self._socket)
+        self.players = self.connection.players
 
     def _return_the_initialization_status(self):
         """Confirm the game initialization."""
@@ -101,11 +132,11 @@ class GameServerInit:
         max_spawns = self._map.count(".")
         print(f"There are {max_spawns} spawners.")
 
-        number_list = list(range(1, max_spawns))
+        spawn_numbers = list(range(1, max_spawns))
 
         for player in self.players:
 
-            number = self._get_unique_number(number_list)
+            number = self._get_unique_number(spawn_numbers)
             index = self._get_the_spawn_position(number)
 
             # Create a string treatable version
@@ -114,10 +145,11 @@ class GameServerInit:
             self.connection.global_message += (f"player{player['digit']}"
                                                f"_place:{str_spawn} ")
 
-    def _get_unique_number(self, number_list):
-        """Get a number in number_list and remove it from the list."""
-        n = random.choice(number_list)
-        number_list.remove(n)
+            self._step = 4
+
+    def _get_unique_number(self, spawn_numbers):
+        """Get a number in spawn_numbers and remove it from the list."""
+        n = spawn_numbers.pop(random.choice(spawn_numbers))
         print("n is equal to ", n)
 
         return n

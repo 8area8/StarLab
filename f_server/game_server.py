@@ -3,10 +3,9 @@
 import pygame
 
 from f_server import time as time
-from f_server.connection import ConnectionController
+from f_server.connection import Connection
 from f_server.heroes_actions import Transform
 from f_server.heroes_actions import Moove
-from f_server import game_initiator as g_i
 
 import constants.find as csfind
 

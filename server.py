@@ -16,15 +16,15 @@ class BaseServer:
         self.hote = ''
         self.port = 12800
 
-        self.connexion = socket.socket()
-        self.connexion.bind((self.hote, self.port))
-        self.connexion.listen(5)
+        self._socket = socket.socket()
+        self._socket.bind((self.hote, self.port))
+        self._socket.listen(5)
         print("The server listen now at the port: {}".format(self.port))
 
         self._running = True
         self.clients_sockets = []
 
-        self._server = SimpleServer(self.connexion, self.clients_sockets)
+        self._server = SimpleServer(self._socket, self.clients_sockets)
 
     def run(self):
         """Run the main loop."""
@@ -40,7 +40,7 @@ class BaseServer:
             except OSError:
 
                 self.clients_sockets = []
-                self._server = SimpleServer(self.connexion,
+                self._server = SimpleServer(self._socket,
                                             self.clients_sockets)
                 print('Connection error.\n- Reinitialized the server. -')
 
@@ -54,7 +54,7 @@ class BaseServer:
         if self.clients_sockets and len(self.clients_sockets) > 4:
             return
 
-        wanted_connexions, wlist, xlist = select.select([self.connexion],
+        wanted_connexions, wlist, xlist = select.select([self._socket],
                                                         [], [], 0)
 
         for new_connection in wanted_connexions:
@@ -70,8 +70,10 @@ class BaseServer:
         if self._server.go_to == 'init_game':
             nb_players = self.server.nb_players
             map_content = self.server.map_content
+            host_player = self._server.host_player
             self._server = GameServerInit(nb_players, map_content,
-                                          self.connexion, self.clients_sockets)
+                                          self.clients_sockets,
+                                          host_player, self._socket)
 
         elif self._server.go_to == 'game':
             map_content = self._server.map_content
@@ -79,7 +81,7 @@ class BaseServer:
                                       self.clients_sockets)
 
         elif self._server.go_to == 'default':
-            self._server = SimpleServer(self.connexion, self.clients_sockets)
+            self._server = SimpleServer(self._socket, self.clients_sockets)
 
     def _close(self):
         """Close the connection."""
@@ -87,7 +89,7 @@ class BaseServer:
         for client in self.clients_sockets:
             client.close()
 
-        self.connexion.close()
+        self._socket.close()
 
 
 if __name__ == '__main__':
