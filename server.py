@@ -42,7 +42,7 @@ class BaseServer:
                 self.clients_sockets = []
                 self._server = SimpleServer(self._socket,
                                             self.clients_sockets)
-                print('Connection error.\n- Reinitialized the server. -')
+                print('Connection error.\nServer reinitialized.')
 
         self._close()
 
@@ -68,8 +68,8 @@ class BaseServer:
     def _change_server_state(self):
         """Change the server's state if needed."""
         if self._server.go_to == 'init_game':
-            nb_players = self.server.nb_players
-            map_content = self.server.map_content
+            nb_players = self._server.nb_players
+            map_content = self._server.map_content
             host_player = self._server.host_player
             self._server = GameServerInit(nb_players, map_content,
                                           self.clients_sockets,

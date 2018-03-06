@@ -32,32 +32,24 @@ class SimpleServer:
             pass
         else:
             for client in client_to_read:
-                self._deal_and_send_to(client)
+                self._deal(client)
 
-    def _deal_and_send_to(self, client):
-        """Send datas to each client."""
+    def _deal(self, client):
+        """Inspect the client's message.
+
+        If the client want to create a game,
+        the go_to variable will change to 'init_game'.
+        """
         msg = client.recv(1024)
         msg = msg.decode()
-        new_msg = ''
 
         if not msg or 'players?' in msg:
             return
 
         print("Received: {0}".format(msg))
 
-        if "is_game_init" in msg:
-            new_msg += "game_init_no "
-
-        if "is_game_running" in msg:
-            new_msg += "game_running_no "
-
         if "create_game" in msg:
             self.nb_players = fd.find_number_after('nb_players:', msg)
             self.map_content = fd.find_text_after('map:', msg)
             self.host_player = client
             self.go_to = 'init_game'
-
-        if new_msg:
-            new_msg = new_msg.encode()
-            client.send(b'send by server:')
-            client.send(new_msg)

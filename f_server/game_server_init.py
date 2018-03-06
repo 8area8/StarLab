@@ -20,13 +20,15 @@ class GameServerInit:
         self.players = None
 
         self.__step = 1
-        self.synchronisation = [False for x in range(len(nb_players))]
+        self.synchronisation = [False for x in range(nb_players)]
 
     def run_a_turn(self):
         """Run a turn in the main loop."""
         if self._step == 1:
-            self._return_the_initialization_status()
-            self._wait_for_players()
+            client_messages = self.connection.receive_from_clients()
+
+            self._return_the_initialization_status(client_messages)
+            self._wait_for_players(client_messages)
             return
 
         self.connection.re_initialize_server_messages()
@@ -53,38 +55,38 @@ class GameServerInit:
     def _step(self, value):
         """Just a print who advertise me when self.__step change."""
         self.__step = value
-        print("step is now", self._step)
+        print("step is now ", self._step)
 
-    def _wait_for_players(self):
+    def _wait_for_players(self, client_messages):
         """Wait and add new players."""
         if len(self.player_sockets) < self.nb_players:
 
-            client_messages = self.connection.receive_from_clients()
             for client, message in client_messages:
                 if 'joining_game' not in message:
                     continue
 
                 self.player_sockets.append(client)
-                break
+                self.connection.send_to(client, 'welcome, new player.')
+                print('added a player.'
+                      f' We now have {len(self.player_sockets)}/'
+                      f'{self.nb_players} players.')
+                break  # one per time.
         else:
             self._init_players_connection()
             self._step = 2
 
     def _init_players_connection(self):
         """Initialize the players."""
-        self.connection.init_players(self.nb_players,
-                                     self.player_sockets,
-                                     self._socket)
+        self.connection.init_players(self.player_sockets)
         self.players = self.connection.players
 
-    def _return_the_initialization_status(self):
+    def _return_the_initialization_status(self, client_messages):
         """Confirm the game initialization."""
-        for player in self.players:
-            if "is_game_init" not in player['msg']:
+        for client, message in client_messages:
+            if "is_game_init?" not in message:
                 continue
 
-            player['to_send'] = ("game_init_yes "
-                                 f"connected_clients:{len(self.players)} ")
+            self.connection.send_to(client, "game_init_yes ")
 
     def _send_map_and_nb_players(self):
         """Return the map and the number of players."""

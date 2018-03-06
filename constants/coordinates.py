@@ -116,8 +116,10 @@ def _get_string_coords_from(tuple_coords):
     string_coords = ""
 
     for number in tuple_coords:
-        str_number = ('0' for x in range(4) if number < 10**x)
-        string_coords += f"{str_number},"
+        # Add some 0 if the number is to small, to keep a constant lenght.
+        zeros = ''.join(['0' for x in range(4) if number < 10**x])
+        # if number equal 0, we don't need it.
+        string_coords += f"{zeros}{number if number > 0 else ''},"
 
     return string_coords
 

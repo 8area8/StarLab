@@ -12,7 +12,7 @@ class Connection:
 
         # SERVER AND CLIENTS SOCKETS
         self._socket = socket
-        self._clients_sockets = client_sockets
+        self._client_sockets = client_sockets
 
         # PLAYERS DATAS
         self.players = []
@@ -98,12 +98,17 @@ class Connection:
                           f" {player['msg']}.")
 
     def receive_from_clients(self):
-        """Basic reveive from all clients."""
+        """Basic reveive from all clients.
+
+        Return a list of tuples: each tuple contains:
+            - the client socket
+            - his message.
+        """
         client_messages = []
         client_to_read = []
         try:
             client_to_read, wlist, xlist = select.select(
-                self.client_sockets, [], [], 0.05)
+                self._client_sockets, [], [], 0.05)
         except select.error:
             pass
         else:
