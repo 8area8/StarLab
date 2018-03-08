@@ -36,6 +36,7 @@ class GameServerInit:
 
         if self._step == 2:
             self._send_map_and_nb_players()
+            self._send_players_informations()
             self._wait_for_synchronisation()
 
         elif self._step == 3:
@@ -45,6 +46,7 @@ class GameServerInit:
             self.go_to = 'game_server'
 
         self.connection.send()
+        self.connection.re_initialize_players_messages()
 
     @property
     def _step(self):
@@ -53,7 +55,7 @@ class GameServerInit:
 
     @_step.setter
     def _step(self, value):
-        """Just a print who advertise me when self.__step change."""
+        """Just a print who advertise me when self.__step changes."""
         self.__step = value
         print("step is now ", self._step)
 
@@ -66,7 +68,6 @@ class GameServerInit:
                     continue
 
                 self.player_sockets.append(client)
-                self.connection.send_to(client, 'welcome, new player.')
                 print('added a player.'
                       f' We now have {len(self.player_sockets)}/'
                       f'{self.nb_players} players.')
@@ -106,11 +107,11 @@ class GameServerInit:
             - the number of players
         """
         for player in self.players:
-            if "players?" not in player["msg"]:
+            if "players_informations?" not in player["msg"]:
                 continue
 
-            turn = random.randint(1, len(self.players))
-            player['to_send'] = ("players_ok "
+            turn = random.randint(1, self.nb_players)
+            player['to_send'] = ("players_infos_ok: "
                                  f"active_turn:{turn} "
                                  f"player_digit:{player['digit']} "
                                  f"nb_players:{self.nb_players}")
@@ -142,16 +143,18 @@ class GameServerInit:
             index = self._get_the_spawn_position(number)
 
             # Create a string treatable version
-            str_spawn = ('0' for x in range(3) if index < 10**x) + str(index)
+            zeros = ''.join(['0' for x in range(3) if index < 10**x])
+            str_spawn = f"{zeros}{index}"
 
             self.connection.global_message += (f"player{player['digit']}"
                                                f"_place:{str_spawn} ")
 
-            self._step = 4
+        self._step = 4
 
     def _get_unique_number(self, spawn_numbers):
         """Get a number in spawn_numbers and remove it from the list."""
-        n = spawn_numbers.pop(random.choice(spawn_numbers))
+        random_number = spawn_numbers.index(random.choice(spawn_numbers))
+        n = spawn_numbers.pop(random_number)
         print("n is equal to ", n)
 
         return n
@@ -159,4 +162,9 @@ class GameServerInit:
     def _get_the_spawn_position(self, number):
         """Return the spawn position from its number."""
         index = 0
-        index = (index + 1 for x in self._map.find('.', index) if x <= number)
+
+        for x in range(number):
+            index = self._map.find('.', index) + 1
+
+        print('n index in equal to', index - 1)
+        return index - 1

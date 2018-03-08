@@ -66,6 +66,7 @@ def _check_if_create_or_join_the_game(interface, connection):
     elif isinstance(interface, SelectLevel):
         interface = Game(
             images["game"],
+            client=None,
             map_contents=interface.evt.map_content,
             map_name=interface.evt.map_name,
             nb_players=interface.nb_players)

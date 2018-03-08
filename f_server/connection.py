@@ -1,6 +1,7 @@
 """Connection module."""
 
 import select
+from itertools import product
 
 
 class Connection:
@@ -38,6 +39,11 @@ class Connection:
         for player in self.players:
             player['to_send'] = ""
 
+    def re_initialize_players_messages(self):
+        """reinitialize 'msg' keys."""
+        for player in self.players:
+            player['msg'] = ''
+
     def send_to(self, client, message):
         """Send a message to a client.
 
@@ -60,8 +66,8 @@ class Connection:
             print(f"\n send: {player['to_send']} "
                   f"to player: {player['raddr']}")
 
-            player['to_send'] = player['to_send'].encode()
-            player["socket"].send(player['to_send'])
+            msg = player['to_send'].encode()
+            player["socket"].send(msg)
 
     def _send_global_message(self):
         """Send a global message to each player."""
@@ -77,16 +83,16 @@ class Connection:
 
     def receive(self):
         """Receive the client's messages."""
-        socket_list = (player['socket'] for player in self.players)
-        self.clients_to_read = []
+        socket_list = [player['socket'] for player in self.players]
+        clients_to_read = []
 
         try:
-            self.clients_to_read, wlist, xlist = select.select(
+            clients_to_read, wlist, xlist = select.select(
                 socket_list, [], [], 0)
         except select.error:
             pass
         else:
-            for client, player in zip(self.clients_to_read, self.players):
+            for client, player in product(clients_to_read, self.players):
                 if client is not player["socket"]:
                     continue
 

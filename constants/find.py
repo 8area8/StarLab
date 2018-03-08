@@ -33,8 +33,10 @@ def find_text_after(sub_message, message):
     The text ends at the first character space from sub_message,
     or the end of message.
     """
+    is_a_map = True if sub_message == 'map:' else False
+
     index = message.find(sub_message) + len(sub_message)
-    endex = message.find(' ', index)
+    endex = (index + 180) if is_a_map else message.find(' ', index)
 
     if endex == -1:  # if no space found (return -1), endex = end of message.
         endex = len(message)

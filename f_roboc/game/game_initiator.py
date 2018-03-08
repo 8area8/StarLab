@@ -7,7 +7,7 @@ import constants.find as fd
 class GameInitiator(Interface):
     """Initialize the game."""
 
-    def __init__(self, connection, map_content=None, nb_players=0, hote=False):
+    def __init__(self, connection, _map=None, nb_players=0, hote=False):
         """Initialize the class."""
         super().__init__()
 
@@ -23,10 +23,21 @@ class GameInitiator(Interface):
         self.players = []
 
         # PROGRESS VARIABLE
-        self._step = 1
+        self.__step = 1
 
         # GAME'S MAP
-        self._map = map_content
+        self._map = _map
+
+    @property
+    def _step(self):
+        """Unused 'get' property."""
+        return self.__step
+
+    @_step.setter
+    def _step(self, value):
+        """Just a print who advertise me when self.__step changes."""
+        self.__step = value
+        print("step is now ", self._step)
 
     def start_events(self, event, mouse):
         """Start the events."""
@@ -62,17 +73,17 @@ class GameInitiator(Interface):
         Else, you will wait for these.
         """
         if self.hote:
-            self._send_map_and_nb_players(self.nb_players, self.map_contents)
+            self._send_map_and_nb_players()
         else:
-            self._map = self._wait_map_and_nb_players(self.connection)
+            self._wait_map_and_nb_players()
 
     def _send_map_and_nb_players(self):
         """Send the map content and the number of players."""
         string_map = 'Q'.join(["".join(line) for line in self._map])
 
-        orders = f"map:{string_map} nb_players:{self.nb_players}"
+        msg = f"nb_players:{self.nb_players} map:{string_map}"
 
-        self.connection.send(orders)
+        self.connection.send(msg)
         self._step = 2
 
     def _wait_map_and_nb_players(self):
@@ -83,12 +94,12 @@ class GameInitiator(Interface):
             self.connection.send('need_map')
 
         else:
-            # CONVERT THE MAP STRING INTO A VALID MAP LIST
+            # convert the map string into a valid map list.
             self._map = fd.find_text_after('map:', msg).split("Q")
             self._map = [list(line) for line in self._map]
 
-            print('Game information received.')
-            print('map received: ', self._map)
+            print('Game informations received.')
+            print('map received:\n', self._map)
             self._step = 2
 
     def _wait_for_all_players(self):
@@ -101,12 +112,16 @@ class GameInitiator(Interface):
         """
         msg = self.connection.receive()
 
-        if "players_ok" in msg:
-            self.player_number = fd.find_number_after('layer_number:', msg)
+        if "players_infos_ok:" in msg:
+            self.player_digit = fd.find_number_after('player_digit:', msg)
             self.active_turn = fd.find_number_after("active_turn:", msg)
             self.nb_players = fd.find_number_after("nb_players:", msg)
 
+            self.connection.send('synchro_ok')
             self._step = 3
+
+        else:
+            self.connection.send('players_informations?')
 
     def _define_players(self):
         """Define the players lists if 'players_list in msg.
@@ -118,6 +133,7 @@ class GameInitiator(Interface):
         - spawn
         """
         msg = self.connection.receive()
+
         if 'players_list:' not in msg:
             return
 

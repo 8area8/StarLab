@@ -75,10 +75,9 @@ class BaseServer:
                                           self.clients_sockets,
                                           host_player, self._socket)
 
-        elif self._server.go_to == 'game':
-            map_content = self._server.map_content
-            self._server = GameServer(self._server.connection, map_content,
-                                      self.clients_sockets)
+        elif self._server.go_to == 'game_server':
+            _map = self._server._map
+            self._server = GameServer(self._server.connection, _map)
 
         elif self._server.go_to == 'default':
             self._server = SimpleServer(self._socket, self.clients_sockets)

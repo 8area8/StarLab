@@ -52,6 +52,8 @@ class TestServer(unittest.TestCase):
         self._test_creating_game()
         self._test_is_game_init()
         self._test_joining_game()
+        self._test_if_map_is_received()
+        self._test_if_synchronisation_is_ok()
 
         self._close()
 
@@ -66,7 +68,16 @@ class TestServer(unittest.TestCase):
         The _server variable of server's thread has to change.
         """
         host_player = self.clients[0]
-        host_player.send('create_game: nb_players:2 map:    OOO   OOO O   Q')
+        host_player.send('create_game: nb_players:2 map:'
+                         '...      O   OO   .O'
+                         'O OOOOOO         O O'
+                         'O O    OOOOOOOOO  OO'
+                         'O O OOOO  OV O O  OO'
+                         'O OT      O  O O   O'
+                         'O OOOO OOOO  O O O O'
+                         'O O  O O  O      O O'
+                         'O    O O  O OOOOOOTO'
+                         'OOOOOO O  O O  ...OO')
 
         time.sleep(0.5)
         self.assertIsInstance(self.server.current_server, GameServerInit)
@@ -93,3 +104,29 @@ class TestServer(unittest.TestCase):
         potential_player.send('joining_game')
         time.sleep(0.5)
         self.assertIsInstance(self.server.current_server.players, list)
+
+    def _test_if_map_is_received(self):
+        """Test if the second player receive a map."""
+        player = self.clients[1]  # Now he's a player!
+
+        player.send('need_map')
+        time.sleep(0.5)
+
+        for i in range(10):
+            msg = player.receive()
+            if msg:
+                self.assertIn('map:', msg)
+                break
+
+            if i == 9:
+                raise TimeoutError()
+
+    def _test_if_synchronisation_is_ok(self):
+        """Test if the synchronisation between server and clients works."""
+        host, player = self.clients[0:2]
+
+        host.send('synchro_ok')
+        player.send('synchro_ok')
+
+        time.sleep(0.1)
+        self.assertEqual(self.server.current_server._step, 4)

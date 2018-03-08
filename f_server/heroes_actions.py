@@ -1,86 +1,105 @@
 """Controle les actions des héros."""
 
+import constants.coordinates as csc
+
 
 class Transform:
-    """Class."""
+    """Transform class.
+
+    This class manages the transform animation of the cases.
+    """
 
     def __init__(self):
-        """Init."""
+        """Initialization of the class."""
         self.activated = False
 
+        # MANAGEMENT OF TIME
         self.current_time = 0.0
         self.index = 0
-        self.ascend = True
+        self.pingpong = 'ping'
 
+        # TRANSFORM COORDINATES
         self.str_coords = ""
 
-    def activation(self, str_coords, orders):
-        """Activation."""
+    def activate(self, str_coords):
+        """Event activation."""
         self.activated = True
         self.str_coords = str_coords
 
-        for i in range(len(orders)):
-            orders[i] += "transform:activated,coords:" + str_coords
+        return f"transform:activated coords:{str_coords}"
 
-    def update(self, orders):
-        """Update."""
+    def update(self):
+        """Event update.
+
+        Return a message who contains the current index of the animation,
+        and when to transform the image.
+        """
         if not self.activated:
-            return
+            return ""
 
-        msg = "transform:"
+        msg = "transform: "
+
         self.current_time += 33.4
-        if self.current_time >= 100:
-            self.current_time = 0.0
+        if not self.current_time >= 100:
+            return ""
 
-            if self.ascend:
-                if self.index == 8:
-                    self.ascend = False
-                    msg += "transfNow:" + self.str_coords
-                else:
-                    self.index += 1
-                    msg += "index{}".format(self.index)
+        self.current_time = 0.0
+
+        if self.pingpong == 'ping':
+            if self.index == 8:
+                self.pingpong = 'pong'
+                msg += f"transfNow:{self.str_coords}"
             else:
-                if self.index == 0:
-                    self.ascend = True
-                    self.activated = False
-                    msg += "end"
-                else:
-                    self.index -= 1
-                    msg += "index{}".format(self.index)
+                self.index += 1
+                msg += f"index:{self.index}"
 
-        if msg == 'transform:':
-            return
+        elif self.pingpong == 'pong':
+            if self.index == 0:
+                self.pingpong = 'ping'
+                self.activated = False
+                msg += "end."
+            else:
+                self.index -= 1
+                msg += f"index:{self.index}"
 
-        for i in range(len(orders)):
-            orders[i] += msg
+        return msg if msg != 'transform ' else ''
 
 
 class Moove:
-    """Class."""
+    """Moove class.
+
+    This class manages the hero's mooving.
+    From a path, the class will calculate a movement per frame,
+    and change this movement according to the path.
+    """
 
     def __init__(self):
-        """Init."""
+        """Initialization of the class."""
+        self.activated = False
+
+        # PATH AND COORDINATES
         self.hero_coords = ()
         self.list_coords = []
+        self.index = 1
 
+        # SPEED MOVEMENT AND DIRECTION
         self.v_x = 0
         self.v_y = 0
 
-        self.index = 1
-
-        self.activated = False
-
     def init_moove(self, hero_coords, directions):
-        """Init. moove."""
+        """Initalization of the movement.
+
+        Create a list of coordinates.
+        """
         self.v_x = 0
         self.v_y = 0
         self.index = 0
         self.list_coords = []
 
         self.activated = True
-        self.hero_coords = get_tuple_coords(hero_coords)
+        self.hero_coords = hero_coords
 
-        x, y = self.hero_coords
+        x, y = hero_coords
         for letter in directions:
 
             if letter == "l":
@@ -96,18 +115,24 @@ class Moove:
 
         self.init_direction()
 
-    def update(self, orders):
-        """Moove."""
+    def update(self):
+        """Moove the active hero.
+
+        Return a message who contains the new hero's coordinates.
+        """
         if not self.activated:
-            return
+            return ""
+
+        msg = 'moove: '
 
         if self.hero_coords == self.list_coords[self.index][0]:
             self.index += 1
+
             if self.index == len(self.list_coords):
                 self.activated = False
-                for i in range(len(orders)):
-                    orders[i] += "moove:end "
-                return
+                msg += "end "
+                return msg
+
             self.init_direction()
 
         x, y = self.hero_coords
@@ -116,13 +141,12 @@ class Moove:
         y += b
         self.hero_coords = x, y
 
-        str_coords = get_string_coords(self.hero_coords)
+        msg += csc.transform_coords_to('string', self.hero_coords)
 
-        for i in range(len(orders)):
-            orders[i] += "moove:{} ".format(str_coords)
+        return msg if msg != 'moove: ' else ''
 
     def init_direction(self):
-        """Init."""
+        """Initialize a new direction according by the index."""
         self.v_x = 0
         self.v_y = 0
 
@@ -136,31 +160,4 @@ class Moove:
         elif letter == "d":
             self.v_y = 4
         else:
-            raise ValueError("lettre invalide.")
-
-
-def get_string_coords(coords):
-    """Get."""
-    str_coords = ""
-
-    for number in coords:
-        msg = ""
-        if number < 1000:
-            msg += "0"
-            if number < 100:
-                msg += "0"
-                if number < 10:
-                    msg += "0"
-        msg += "{}".format(number)
-        str_coords += msg + ","
-
-    return str_coords
-
-
-def get_tuple_coords(str_coords):
-    """Get."""
-    x = int(str_coords[:4])
-    y = int(str_coords[5:])
-    print(x, y)
-
-    return x, y
+            raise ValueError("invalid letter.")

@@ -1,119 +1,128 @@
-"""Module HUB de la partie game."""
+"""Module HUB of the game part."""
 
 import pygame
 
-from constants import game_sizes as cst
+import constants.coordinates as csc
+import constants.find as csfind
 
 from f_roboc.game.time import TimeController as TimeController
 from f_roboc.game.event import EventsController
 
-import f_roboc.game.game_initiator as g_i
-
 
 class Game:
-    """La classe de jeu côté client."""
+    """The game client class.
 
-    def __init__(self, imgs, client, map_contents=None, map_name=None,
-                 nb_players=None, hote=True):
-        """Initialisation."""
-        self.to_select_level = False
-        self.to_game = False
-        self.to_main_menu = False
+    Manages the game part.
+    """
 
-        self._map_contents = map_contents
-        self.nb_players = nb_players
-        self.hote = hote
+    def __init__(self, imgs, connection, players, _map):
+        """Initialization of the class."""
 
-        self._clt = client
+        # GAME'S MAP
+        self._map = _map
 
-        self._orders = ""
-        self._server_msg = ""
+        # CONNECTION INFORMATIONS
+        self.connection = connection
+        self.msg = ""
 
-        self._have_players_infos = False
-        self._start_game = False
-
-        self.player_number = None
-        self.players = []
-
+        # GAME INFORMATIONS
         self.player_turn = None
         self.in_action = False
 
+        # SPRITES INITIALIZATION.
         self.sprt = None
-        self.sprt.create_map(self._map_contents)
+        self.sprt.create_map(self._map)
+        self.sprt.init_heroes(players)
+        self.sprt.init_pathfinder()
+        self.sprt.init_transform_paths()
+
+        # EVENT OBJECTS
         self.time = TimeController()
         self.evt = EventsController(self)
 
     @property
     def active_player(self):
-        """Active."""
+        """Return the active player."""
         for hero in self.sprt.heroes_grp:
             if hero.number == self.player_turn:
                 return hero
-        raise ValueError("le tour ne correspond à aucun héros!")
+        raise ValueError("The turn's number doesn't correspond to any hero!")
 
     @property
     def active_turn(self):
-        """Active."""
+        """Return the active turn."""
         if self.player_number == self.player_turn:
             return True
         else:
             return False
 
     def events(self, event, mouse):
-        """On appel les évènements."""
-        if not self._start_game:
-            return
+        """Events call."""
+        actions = self.evt.start(event, mouse)
 
-        self._orders = ""
-
-        self.evt.start(event, mouse)
-
-        """Envoit des ordres."""
-        self._clt.send(self._orders)
-
-    def init_update(self):
-        """Update for the game initiation."""
-        self._orders = ""
-
-        if not self._have_players_infos:
-
-            temp = self.time.update()
-            if not temp:
-                return
-
-            msg = self._clt.receive()
-
-            self._orders += "players?"
-            self.player_turn, self.player_number, self.nb_players =\
-                g_i.wait_new_players(msg)
-
-            if "players_ok" in msg:
-                self._orders = "synchro_ok"
-                self._have_players_infos = True
-
-            self._clt.send(self._orders)
-            return
-
-        msg = self._clt.receive()
-
-        if "player's list" in msg:
-            g_i.define_players(msg, self.player_number, self.players)
-            self.sprt.init_heroes(self.players)
-            self.sprt.init_pathfinder()
-            self.sprt.init_transform_paths()
-
-        if "start_game" in msg:
-            self._start_game = True
+        # We now send the actions.
+        self._clt.send(actions)
 
     def update(self):
-        """On receptionne les données du serveur.
+        """Recept and process the datas."""
+        msg = self._clt.receive()
 
-        pour chaque surface, on attribut les données du serveur.
-        """
-        if not self._start_game:
-            self.init_update()
-            return
+        self.show_possibles_cases()
 
+        if self.active_turn:
+            self.sprt.menu = self.sprt.menu_blue
+        else:
+            self.sprt.menu = self.sprt.menu_grey
+
+        if "time:" in msg:
+            i = self._server_msg.find("time:") + 5
+            self.sprt.time.choose_index(
+                int(self._server_msg[i]), self.active_turn)
+
+        if "next_turn" in msg:
+            i = self._server_msg.find("next_turn:")
+            i += 10
+            self.player_turn = int(self._server_msg[i])
+            self.sprt.next_turn.start_anim()
+            self.active_player.activate_skills()
+
+        # TRANSFORM
+        if "transform:" in msg:
+            if "transform: activated" in msg:
+                self.in_action = True
+                self.active_player.define_key_imgs("transform")
+                coords = csfind.find_and_get_coords_after("coords:", msg)
+                self.sprt.transform_anim.define_coords(coords)
+
+            elif "index:" in msg:
+                index = csfind.find_number_after("index:", msg)
+                self.sprt.transform_anim.play_animation(index=index)
+
+            if "transfNow:" in self._server_msg:
+                coords = csfind.find_and_get_coords_after('transfNow:', msg)
+                self.sprt.cases_group[coords].transform()
+
+            if "end" in self._server_msg:
+                self.in_action = False
+                self.sprt.transform_anim.play_animation(end=True)
+                self.active_player.define_key_imgs("breath")
+
+        # MOOVE
+        if "moove" in msg:
+            if "end" in msg:
+                self.in_action = False
+                self.active_player.define_key_imgs("breath")
+            else:
+                self.in_action = True
+                coords = csfind.find_and_get_coords_after("moove:", msg)
+                self.active_player.moove(coords)
+
+        self.sprt.cases_group.update()
+        self.sprt.menu_layer_2.update(self.active_turn)
+        self.sprt.heroes_grp.update()
+
+    def show_moove_or_transform(self):
+        """Show the moove cases or transform cases."""
         if self.active_turn and not self.in_action:
             if self.evt.transform_vision:
                 self.sprt.transform_paths.show_possibles_cases(
@@ -126,69 +135,8 @@ class Game:
             self.sprt.pathfinder.empty()
             self.sprt.transform_paths.empty()
 
-        self._server_msg = self._clt.receive()
-
-        if self.active_turn:
-            self.sprt.menu = self.sprt.menu_blue
-        else:
-            self.sprt.menu = self.sprt.menu_grey
-
-        if "time:" in self._server_msg:
-            i = self._server_msg.find("time:") + 5
-            self.sprt.time.choose_index(
-                int(self._server_msg[i]), self.active_turn)
-
-        if "next_turn" in self._server_msg:
-            i = self._server_msg.find("next_turn:")
-            i += 10
-            self.player_turn = int(self._server_msg[i])
-            self.sprt.next_turn.start_anim()
-            self.active_player.activate_skills()
-
-        if "transform:" in self._server_msg:
-            if "transform:activated" in self._server_msg:
-                self.in_action = True
-                self.active_player.define_key_imgs("transform")
-                index = self._server_msg.find("coords:") + 7
-                str_coords = self._server_msg[index:index + 7]
-                coords = cst.get_tuple_coords(str_coords)
-                coords = cst.get_true_coords(coords)
-                self.sprt.transform_anim.define_coords(coords)
-            elif "index" in self._server_msg:
-                index = self._server_msg.find("index") + 5
-                index = int(self._server_msg[index])
-                self.sprt.transform_anim.play_animation(index=index)
-            if "transfNow:" in self._server_msg:
-                index = self._server_msg.find("transfNow:") + 10
-                str_coords = self._server_msg[index:index + 7]
-                coords = cst.get_tuple_coords(str_coords)
-                self.sprt.cases_group[coords].transform()
-            if "end" in self._server_msg:
-                self.in_action = False
-                self.sprt.transform_anim.play_animation(end=True)
-                self.active_player.define_key_imgs("breath")
-
-        if "moove" in self._server_msg:
-            if "end" in self._server_msg:
-                self.in_action = False
-                self.active_player.define_key_imgs("breath")
-            else:
-                self.in_action = True
-                index = self._server_msg.find("moove:") + 6
-                str_coords = self._server_msg[index:index + 9]
-                coords = cst.get_tuple_coords(str_coords, base=1000)
-                self.active_player.moove(coords)
-
-        self.sprt.cases_group.update()
-        self.sprt.menu_layer_2.update(self.active_turn)
-        self.sprt.heroes_grp.update()
-
     def draw(self):
-        """On dessine tous les éléments."""
-        if not self._start_game:
-            self.sprt.main_surface.blit(self.sprt.wait_players, (0, 0))
-            return
-
+        """Sprites drawing."""
         self.sprt.cases_group.draw(self.sprt.map_surface)
         self.sprt.heroes_grp.draw(self.sprt.map_surface)
         self.sprt.pathfinder.draw(self.active_turn, self.sprt.map_surface)
