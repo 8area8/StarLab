@@ -12,9 +12,11 @@ class SimpleServer:
         """Initialize the server."""
         self.go_to = ''
 
+        # SOCKETS
         self.main_connection = main_connection
         self.client_sockets = client_sockets
 
+        # GAME MAP AND PLAYER NUMBERS
         self.nb_players = 0
         self.map_content = ""
 

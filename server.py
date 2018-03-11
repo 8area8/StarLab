@@ -1,5 +1,7 @@
 """Server source."""
 
+import pygame
+
 import socket
 import select
 
@@ -13,18 +15,27 @@ class BaseServer:
 
     def __init__(self):
         """Initialize the class."""
+        # CONNECTION INFOS
         self.hote = ''
         self.port = 12800
 
+        # SOCKET INITIALISATION
         self._socket = socket.socket()
         self._socket.bind((self.hote, self.port))
         self._socket.listen(5)
         print("The server listen now at the port: {}".format(self.port))
 
-        self._running = True
+        # SOCKET CLIENTS LIST
         self.clients_sockets = []
 
+        # FPS
+        self.clock = pygame.time.Clock()
+
+        # SERVER STATUS
         self._server = SimpleServer(self._socket, self.clients_sockets)
+
+        # BOOLEAN WHO RUN THE LOOP
+        self._running = True
 
     def run(self):
         """Run the main loop."""
@@ -43,6 +54,8 @@ class BaseServer:
                 self._server = SimpleServer(self._socket,
                                             self.clients_sockets)
                 print('Connection error.\nServer reinitialized.')
+
+            self.clock.tick(30)
 
         self._close()
 

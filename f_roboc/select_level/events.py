@@ -11,14 +11,11 @@ class EventsController:
         """Initialisation."""
         self.go_to = ""
 
-        self.map_content = None
-        self.map_name = None
-
         self.button_list = button_list
         self.not_implemented = not_implemented
         self.map_buttons = map_buttons
 
-    def start(self, event, mouse, connected, game_launched):
+    def start(self, event, mouse, connected, game_launched, _map):
         """On lance les testes d'évènements."""
         if event.type == MOUSEBUTTONDOWN and event.button == 1:
 
@@ -40,6 +37,5 @@ class EventsController:
                 pos = mouse
                 pos = pos[0] - 259 * 2, pos[1] - 160 * 2
                 if button.rect.collidepoint(pos):
-                    self.go_to = 'game'
-                    self.map_content = button.contents
-                    self.map_name = button.text
+                    self.go_to = 'game_init'
+                    _map.append(button.contents)

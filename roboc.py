@@ -12,6 +12,7 @@ import f_roboc.connection as f_connection
 from f_roboc.introduction.introduction import Introduction
 from f_roboc.main_menu.main_menu import MainMenu
 from f_roboc.select_level.select_level import SelectLevel
+from f_roboc.game.game_initiator import GameInitiator
 from f_roboc.game.game import Game
 
 
@@ -52,24 +53,18 @@ def start_loop(images, main_screen, connection):
     return
 
 
-def _check_if_create_or_join_the_game(interface, connection):
+def _check_if_create_or_join_the_game(interface, connection, images):
     """Check if the player creates the game, or if he joins a game.
 
     if he creates the game (from SelectLevel), some parameters will be added.
     He can join a game (from MainMenu), if another client has created a game.
     """
     if isinstance(interface, MainMenu):
-        interface = Game(
-            images["game"],
-            hote=interface.hote)
+        return GameInitiator(images, connection)
 
     elif isinstance(interface, SelectLevel):
-        interface = Game(
-            images["game"],
-            client=None,
-            map_contents=interface.evt.map_content,
-            map_name=interface.evt.map_name,
-            nb_players=interface.nb_players)
+        return GameInitiator(images, connection, interface._map[0],
+                             interface.nb_players, hote=True)
 
     else:
         raise TypeError("You cannot create or join a game "
@@ -91,8 +86,13 @@ def _change_interface(interface, images, connection):
     elif interface.go_to == 'select_level':
         interface = SelectLevel(images["select_level"], connection)
 
+    elif interface.go_to == 'game_init':
+        interface = _check_if_create_or_join_the_game(interface, connection,
+                                                      images['game_init'])
+
     elif interface.go_to == 'game':
-        _check_if_create_or_join_the_game(interface, connection)
+        interface = Game(images["game"], connection,
+                         interface.players, interface._map)
 
     else:
         raise ValueError("'go_to' must be equal to 'main_menu', "

@@ -19,9 +19,6 @@ class GameServer:
         self.connection = connection
         self.players = self.connection.players
 
-        # FPS
-        self._clock = pygame.time.Clock()
-
         # EVENTS
         self._timer = TimeController()
         self.transform = Transform()
@@ -70,7 +67,6 @@ class GameServer:
 
         self.connection.send()
         self.connection.re_initialize_players_messages()
-        self._clock.tick(30)
 
     def _events(self):
         """Get the active player's message and call the desired event.
@@ -106,5 +102,5 @@ class GameServer:
 
         self.get_next_time()
 
-        if "end" in self.orders[0]:
+        if "end" in self.connection.global_message:
             self.in_event = False

@@ -1,4 +1,4 @@
-"""Connection module."""
+"""Connection module, for server."""
 
 import select
 from itertools import product
@@ -121,6 +121,8 @@ class Connection:
             for client in client_to_read:
 
                 message = client.recv(1024).decode()
+                if message:
+                    print(f'received: {message}')
                 client_messages.append((client, message))
 
         return client_messages

@@ -1,13 +1,16 @@
 """Game initiator."""
 
-from f_roboc.interface import Interface
+import pygame
+
 import constants.find as fd
+from f_roboc.interface import Interface
+from f_roboc.game.sprites import GameInitSprites
 
 
 class GameInitiator(Interface):
     """Initialize the game."""
 
-    def __init__(self, connection, _map=None, nb_players=0, hote=False):
+    def __init__(self, imgs, connection, _map=None, nb_players=0, hote=False):
         """Initialize the class."""
         super().__init__()
 
@@ -28,6 +31,14 @@ class GameInitiator(Interface):
         # GAME'S MAP
         self._map = _map
 
+        # SPRITES
+        self.sprt = GameInitSprites(imgs)
+
+        # FPS (USED TO SLOW THE SENDING)
+        self.clock = pygame.time.Clock()
+
+        self.name = 'game_init'
+
     @property
     def _step(self):
         """Unused 'get' property."""
@@ -46,14 +57,16 @@ class GameInitiator(Interface):
     @Interface._secured_connection
     def transfer_datas(self):
         """Data communication."""
+        msg = self.connection.receive()
+
         if self._step == 1:
-            self._get_or_send_map_and_nb_players()
+            self._get_or_send_map_and_nb_players(msg)
 
         elif self._step == 2:
-            self._wait_for_all_players()
+            self._wait_for_all_players(msg)
 
         elif self._step == 3:
-            self._define_players()
+            self._define_players(msg)
 
         elif self._step == 4:
             self.go_to = 'game'
@@ -64,9 +77,9 @@ class GameInitiator(Interface):
 
     def draw(self):
         """Draw the sprites."""
-        pass
+        self.sprt.main_surface.blit(self.sprt.background, (0, 0))
 
-    def _get_or_send_map_and_nb_players(self):
+    def _get_or_send_map_and_nb_players(self, msg):
         """Get or send the map and the number of players.
 
         if you are the hote, you will send these informations.
@@ -75,21 +88,19 @@ class GameInitiator(Interface):
         if self.hote:
             self._send_map_and_nb_players()
         else:
-            self._wait_map_and_nb_players()
+            self._wait_map_and_nb_players(msg)
 
     def _send_map_and_nb_players(self):
         """Send the map content and the number of players."""
-        string_map = 'Q'.join(["".join(line) for line in self._map])
+        string_map = 'Q'.join("".join(line) for line in self._map)
 
-        msg = f"nb_players:{self.nb_players} map:{string_map}"
+        msg = f"create_game: nb_players:{self.nb_players} map:{string_map}"
 
         self.connection.send(msg)
         self._step = 2
 
-    def _wait_map_and_nb_players(self):
+    def _wait_map_and_nb_players(self, msg):
         """Wait for the map and the number of players."""
-        msg = self.connection.receive()
-
         if 'map:' not in msg:
             self.connection.send('need_map')
 
@@ -102,7 +113,7 @@ class GameInitiator(Interface):
             print('map received:\n', self._map)
             self._step = 2
 
-    def _wait_for_all_players(self):
+    def _wait_for_all_players(self, msg):
         """Wait for new game's connections.
 
         when the server has all its players, it send:
@@ -110,8 +121,6 @@ class GameInitiator(Interface):
         - the active turn
         - the number of players.
         """
-        msg = self.connection.receive()
-
         if "players_infos_ok:" in msg:
             self.player_digit = fd.find_number_after('player_digit:', msg)
             self.active_turn = fd.find_number_after("active_turn:", msg)
@@ -121,9 +130,10 @@ class GameInitiator(Interface):
             self._step = 3
 
         else:
+            self.clock.tick(10)
             self.connection.send('players_informations?')
 
-    def _define_players(self):
+    def _define_players(self, msg):
         """Define the players lists if 'players_list in msg.
 
         We create one list per player, who contains his:
@@ -132,8 +142,6 @@ class GameInitiator(Interface):
         - membership
         - spawn
         """
-        msg = self.connection.receive()
-
         if 'players_list:' not in msg:
             return
 

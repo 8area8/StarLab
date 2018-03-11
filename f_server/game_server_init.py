@@ -12,22 +12,25 @@ class GameServerInit:
         """Initialize the class."""
         self.go_to = ''
 
+        # MAP AND PLAYER NUMBERS
         self.nb_players = nb_players
         self._map = _map
 
+        # CONNECTION
         self.player_sockets = [host_player]
         self.connection = Connection(nb_players, client_sockets, socket)
         self.players = None
 
+        # STEPS
         self.__step = 1
         self.synchronisation = [False for x in range(nb_players)]
 
     def run_a_turn(self):
         """Run a turn in the main loop."""
-        if self._step == 1:
-            client_messages = self.connection.receive_from_clients()
+        client_messages = self.connection.receive_from_clients()
+        self._return_the_initialization_status(client_messages)
 
-            self._return_the_initialization_status(client_messages)
+        if self._step == 1:
             self._wait_for_players(client_messages)
             return
 
@@ -84,7 +87,7 @@ class GameServerInit:
     def _return_the_initialization_status(self, client_messages):
         """Confirm the game initialization."""
         for client, message in client_messages:
-            if "is_game_init?" not in message:
+            if "is_game_init" not in message:
                 continue
 
             self.connection.send_to(client, "game_init_yes ")
@@ -144,7 +147,7 @@ class GameServerInit:
 
             # Create a string treatable version
             zeros = ''.join(['0' for x in range(3) if index < 10**x])
-            str_spawn = f"{zeros}{index}"
+            str_spawn = f"{zeros}{index if index > 0 else ''}"
 
             self.connection.global_message += (f"player{player['digit']}"
                                                f"_place:{str_spawn} ")

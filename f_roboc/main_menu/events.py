@@ -30,7 +30,7 @@ class EventsController:
                             self.go_to = 'select_level'
                         elif button.name == 'rejoindre':
                             if game_init:
-                                self.go_to = 'game'
+                                self.go_to = 'game_init'
 
             else:
                 if self.lost_connexion.button.rect.collidepoint(mouse):

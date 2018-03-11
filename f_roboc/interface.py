@@ -34,7 +34,7 @@ class Interface:
     def _secured_connection(transfer_datas):
         """Decorate and secure the datas transfers.
 
-        If an OS error occure, go_to variable will be equal to 'main_menu',
+        If an OS error occures, go_to variable will be equal to 'main_menu',
         with -LosConnection's argument.
         """
 
@@ -48,8 +48,9 @@ class Interface:
                 if self.name != 'main_menu' and self.name != 'select_level':
                     self.go_to = 'main_menu -LostConnexion'
 
-                self.connection.close()
-                self.connection.re_init()
+                self.connection.close()  # self._socket.close()
+                self.connection.re_init()  # self._socket = socket.socket()
+
         return wrapper
     _secured_connection = staticmethod(_secured_connection)
 

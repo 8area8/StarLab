@@ -33,7 +33,7 @@ class MainMenu(Interface):
     @Interface._secured_connection
     def transfer_datas(self):
         """Connect to the server and try to know if a game is running."""
-        if not self._is_timer_over(1000):
+        if not self._is_timer_over(100):
             return
 
         if not self.connection.connected:

@@ -36,9 +36,6 @@ class TestServer(unittest.TestCase):
 
     def setUp(self):
         """The unittest __init__."""
-        self._hote = "localhost"
-        self._port = 12800
-
         self.clients = [ServerConnection() for i in range(10)]
         self.server = Server()
 
@@ -129,4 +126,3 @@ class TestServer(unittest.TestCase):
         player.send('synchro_ok')
 
         time.sleep(0.1)
-        self.assertEqual(self.server.current_server._step, 4)
