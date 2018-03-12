@@ -10,6 +10,7 @@ class GameServerInit:
 
     def __init__(self, nb_players, _map, client_sockets, host_player, socket):
         """Initialize the class."""
+        print('type: game_server_init.')
         self.go_to = ''
 
         # MAP AND PLAYER NUMBERS
@@ -135,9 +136,10 @@ class GameServerInit:
 
         Add the result in global_message.
         """
+        self.connection.global_message += "players_list: "
+
         max_spawns = self._map.count(".")
         print(f"There are {max_spawns} spawners.")
-
         spawn_numbers = list(range(1, max_spawns))
 
         for player in self.players:

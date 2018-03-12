@@ -57,6 +57,8 @@ class GameInitiator(Interface):
     @Interface._secured_connection
     def transfer_datas(self):
         """Data communication."""
+        self.clock.tick(10)
+
         msg = self.connection.receive()
 
         if self._step == 1:
@@ -73,7 +75,7 @@ class GameInitiator(Interface):
 
     def update(self):
         """Update the sprites."""
-        pass
+        self._refresh_timer()
 
     def draw(self):
         """Draw the sprites."""
@@ -130,7 +132,6 @@ class GameInitiator(Interface):
             self._step = 3
 
         else:
-            self.clock.tick(10)
             self.connection.send('players_informations?')
 
     def _define_players(self, msg):

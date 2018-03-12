@@ -50,6 +50,7 @@ def start_loop(images, main_screen, connection):
         # Control the frames per second (want 30 fps).
         clock.tick(30)
 
+    interface.connection.close()
     return
 
 

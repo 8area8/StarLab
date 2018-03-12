@@ -46,6 +46,7 @@ class BaseServer:
             try:
 
                 self._add_clients()
+                self._test_clients()
                 self._server.run_a_turn()
 
             except OSError:
@@ -94,6 +95,16 @@ class BaseServer:
 
         elif self._server.go_to == 'default':
             self._server = SimpleServer(self._socket, self.clients_sockets)
+
+    def _test_clients(self):
+        """Test if each client is connected."""
+        for i, client in enumerate(self.clients_sockets):
+            try:
+                client.send(b'')
+            except OSError:
+                client.close()
+                del self.clients_sockets[i]
+                print('a client is deconnected.')
 
     def _close(self):
         """Close the connection."""

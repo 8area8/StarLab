@@ -14,6 +14,7 @@ class Connection:
         # SERVER AND CLIENTS SOCKETS
         self._socket = socket
         self._client_sockets = client_sockets
+        self._player_sockets = []
 
         # PLAYERS DATAS
         self.players = []
@@ -22,6 +23,8 @@ class Connection:
 
     def init_players(self, player_sockets):
         """Initialize the player's list."""
+        self._player_sockets = player_sockets
+
         for i, socket in enumerate(player_sockets):
             player = {
                 "socket": socket,
@@ -82,13 +85,12 @@ class Connection:
             player['socket'].send(msg)
 
     def receive(self):
-        """Receive the client's messages."""
-        socket_list = [player['socket'] for player in self.players]
+        """Receive the player's messages."""
         clients_to_read = []
 
         try:
             clients_to_read, wlist, xlist = select.select(
-                socket_list, [], [], 0)
+                self._player_sockets, [], [], 0)
         except select.error:
             pass
         else:
@@ -104,7 +106,7 @@ class Connection:
                           f" {player['msg']}.")
 
     def receive_from_clients(self):
-        """Basic reveive from all clients.
+        """Basic reveive from all others clients.
 
         Return a list of tuples: each tuple contains:
             - the client socket
@@ -112,9 +114,12 @@ class Connection:
         """
         client_messages = []
         client_to_read = []
+
+        clients = self._client_sockets
+        no_players = [s for s in clients if s not in self._player_sockets]
+
         try:
-            client_to_read, wlist, xlist = select.select(
-                self._client_sockets, [], [], 0.05)
+            client_to_read, _, _ = select.select(no_players, [], [], 0.05)
         except select.error:
             pass
         else:

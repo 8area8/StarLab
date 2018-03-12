@@ -13,16 +13,21 @@ class MainMenu(Interface):
         """Init."""
         super().__init__()
 
+        # NAME
         self.name = 'main_menu'
 
+        # CONNECTION
         self.connection = connection
+
+        # SPRITES AND EVENTS
         self.sprt = SpritesController(images)
         self.events = EventsController(self.sprt.button_list,
                                        self.sprt.lost_connexion)
 
-        self.connection.close()  # Debugge a freeze_screen the 1rst connection.
+        # BOOLEAN GAME STATUS
         self._game_init = False
 
+        # SHOW ERROR CONNECTION IF ERROR
         if error:
             self.sprt.lost_connexion.activated = True
 
@@ -59,6 +64,8 @@ class MainMenu(Interface):
         self._refresh_timer()
 
         self.go_to = self.events.go_to
+        if self.go_to == "game_init":
+            self.connection.send('joining_game')
 
         if not self.sprt.lost_connexion.activated:
             self.sprt.button_list.update(self._game_init)

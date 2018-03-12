@@ -55,7 +55,7 @@ class GameServer:
             return
 
         for player in self.players:
-            self.player['to_send'] += msg
+            player['to_send'] += msg
 
     def run_a_turn(self):
         """Run a turn in the server's loop."""

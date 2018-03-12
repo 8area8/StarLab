@@ -45,7 +45,6 @@ class SelectLevel(Interface):
             return
 
         if not self.connection.connected:
-            print('try to connect')
             self.connection.connect()
         else:
             self._ask_if_game_is_running()

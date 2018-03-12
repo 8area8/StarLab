@@ -1,5 +1,7 @@
 """Contains the parent class Interface."""
 
+from f_roboc.connection import ServerConnection
+
 
 class Interface:
     """That class is a base class for the others interfaces."""
@@ -48,8 +50,7 @@ class Interface:
                 if self.name != 'main_menu' and self.name != 'select_level':
                     self.go_to = 'main_menu -LostConnexion'
 
-                self.connection.close()  # self._socket.close()
-                self.connection.re_init()  # self._socket = socket.socket()
+                self.connection.close()
 
         return wrapper
     _secured_connection = staticmethod(_secured_connection)
