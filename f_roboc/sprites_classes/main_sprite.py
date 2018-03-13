@@ -172,7 +172,12 @@ class Button(MainSprite):
 
 
 class ButtonPlusClick(Button):
-    """Application for button who has an animation if we click on."""
+    """Application for button who has an animation if we click on.
+
+    to use it:
+        - set the 'activated' attribut to 'True' in events,
+          if a player click on it.
+    """
 
     def __init__(self, pushed_image, active_image, passive_image,
                  coords, name, max_timer=100):
@@ -180,16 +185,63 @@ class ButtonPlusClick(Button):
         super().__init__(active_image, passive_image, coords, name)
 
         self._pushed_image = pushed_image
-        self.max_timer = max_timer
+        self._max_timer = max_timer
 
     def update(self):
         """Update the sprite."""
         if self.activated:
             self.image = self._pushed_image
-            self._call_method_after_timer(self.desactivate, self.max_timer)
+            self._call_method_after_timer(self.desactivate, self._max_timer)
         else:
             self._change_image_if_overflew()
 
     def desactivate(self):
         """Desativate the activated variable."""
         self.activated = False
+
+
+class ButtonGame(ButtonPlusClick):
+    """Button plus click, plus animated passive image and broken image.
+
+    To use it:
+        - update the sprite (or the sprite group),
+          with the 'active_turn' parameter.
+
+        - set the 'activated' attribut to 'True' in events,
+          if a player click on it.
+    """
+
+    def __init__(self, pushed_image, active_image, passive_images,
+                 broken_image, coords, name, max_timer=100):
+        """Initialize the class."""
+        super().__init__(pushed_image, active_image, passive_images,
+                         coords, name, max_timer)
+
+        self._passive_images = passive_images
+        self._broken_image = broken_image
+        self.image = self._passive_images[self._index]
+
+    def update(self, active_turn):
+        """Update the sprite.
+
+        The sprite has 4 forms:
+            - the animated passive form, in your active turn.
+            - the active form, in your active turn if overflew.
+            - the clicked form, quick form if you click on it.
+            - the broken form, if it s not your active turn.
+        """
+        if self.activated:
+            self.image = self._pushed_image
+            self._call_method_after_timer(self.desactivate, self._max_timer)
+            return
+
+        if not active_turn:
+            self.image = self._broken_image
+            return
+
+        self._set_ping_pong_index()
+
+        if self.overflew:
+            self.image = self._active_image
+        else:
+            self.image = self._passive_images[self._index]

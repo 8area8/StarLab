@@ -67,7 +67,7 @@ class Game:
         """Recept and process the datas."""
         msg = self._clt.receive()
 
-        self.show_possibles_cases()
+        self._show_moove_or_transform()
 
         if self.active_turn:
             self.sprt.menu = self.sprt.menu_blue
@@ -75,14 +75,11 @@ class Game:
             self.sprt.menu = self.sprt.menu_grey
 
         if "time:" in msg:
-            i = self._server_msg.find("time:") + 5
-            self.sprt.time.choose_index(
-                int(self._server_msg[i]), self.active_turn)
+            number = csfind.find_number_after("time:", msg)
+            self.sprt.time.choose_index(number, self.active_turn)
 
         if "next_turn" in msg:
-            i = self._server_msg.find("next_turn:")
-            i += 10
-            self.player_turn = int(self._server_msg[i])
+            self.player_turn = csfind.find_number_after("next_turn:", msg)
             self.sprt.next_turn.start_anim()
             self.active_player.activate_skills()
 
@@ -121,7 +118,7 @@ class Game:
         self.sprt.menu_layer_2.update(self.active_turn)
         self.sprt.heroes_grp.update()
 
-    def show_moove_or_transform(self):
+    def _show_moove_or_transform(self):
         """Show the moove cases or transform cases."""
         if self.active_turn and not self.in_action:
             if self.evt.transform_vision:

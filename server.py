@@ -1,13 +1,22 @@
 """Server source."""
 
-import pygame
-
 import socket
 import select
+import os
+
+import pygame
 
 from f_server.game_server_init import GameServerInit
 from f_server.game_server import GameServer
 from f_server.simple_server import SimpleServer
+
+
+def clear_the_shell():
+    """Very small function used to clear the shell.
+
+    <3
+    """
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 class BaseServer:
@@ -34,7 +43,7 @@ class BaseServer:
         # SERVER STATUS
         self._server = SimpleServer(self._socket, self.clients_sockets)
 
-        # BOOLEAN WHO RUN THE LOOP
+        # BOOLEAN THAT RUN THE LOOP
         self._running = True
 
     def run(self):
@@ -54,6 +63,7 @@ class BaseServer:
                 self.clients_sockets = []
                 self._server = SimpleServer(self._socket,
                                             self.clients_sockets)
+                clear_the_shell()
                 print('Connection error.\nServer reinitialized.')
 
             self.clock.tick(30)

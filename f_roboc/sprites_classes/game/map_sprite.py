@@ -1,7 +1,7 @@
-"""Module très important, il contient un groupe de sprite.
+"""Big module that contains a sprite group.
 
-Possède des clés pour mieux controler les éléments,
-en fonction de leur coordonnées.
+Has keys to control each element,
+in function of their coordinates.
 """
 
 import pygame

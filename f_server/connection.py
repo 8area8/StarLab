@@ -86,15 +86,17 @@ class Connection:
 
     def receive(self):
         """Receive the player's messages."""
-        clients_to_read = []
+        players_to_read = []
 
         try:
-            clients_to_read, wlist, xlist = select.select(
+            players_to_read, wlist, xlist = select.select(
                 self._player_sockets, [], [], 0)
         except select.error:
             pass
+        except ValueError as e:
+            raise OSError  # We raise this to be catched by the baseserver try
         else:
-            for client, player in product(clients_to_read, self.players):
+            for client, player in product(players_to_read, self.players):
                 if client is not player["socket"]:
                     continue
 
