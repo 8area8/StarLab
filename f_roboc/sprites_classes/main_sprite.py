@@ -206,7 +206,6 @@ class ButtonGame(ButtonPlusClick):
     To use it:
         - update the sprite (or the sprite group),
           with the 'active_turn' parameter.
-
         - set the 'activated' attribut to 'True' in events,
           if a player click on it.
     """

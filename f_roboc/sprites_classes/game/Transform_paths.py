@@ -1,28 +1,28 @@
-"""Module de transform."""
+"""The transform module."""
 
 import pygame
 
-import constants.game_sizes as cst
+import constants.coordinates as csc
 
 
-class TransformPaths(pygame.sprite.Group):
-    """Clas."""
+class SearchTransformPaths(pygame.sprite.Group):
+    """This class find and show the possibles transform paths."""
 
-    def __init__(self, img, hero, others):
-        """Init."""
+    def __init__(self, image, hero, others):
+        """Initialization."""
         pygame.sprite.Group.__init__(self, )
 
-        self.img = img
+        self.image = image
         self.hero = hero
         self.others = others
 
     def draw(self, active_turn, surface):
-        """Redefinit vite fait la méthode draw."""
+        """Redefine the draw method, that run if active_turn is True."""
         if active_turn:
             pygame.sprite.Group.draw(self, surface=surface)
 
     def show_possibles_cases(self, cases_list):
-        """show."""
+        """Show the possibles transform cases."""
         self.empty()
 
         x, y = self.hero.abstract_coords
@@ -42,18 +42,18 @@ class TransformPaths(pygame.sprite.Group):
             if coords in [y.abstract_coords for y in self.others]:
                 continue
 
-            self.add(TransformCase(self.img, coords))
+            self.add(TransformCase(self.image, coords))
 
 
 class TransformCase(pygame.sprite.Sprite):
-    """Ee<."""
+    """Create a transform case sprite."""
 
     def __init__(self, image, coords):
-        """init."""
-        pygame.sprite.Sprite.__init__(self)
+        """Initialization."""
+        super().__init__()
 
         self.image = image
         self.coords = coords
 
         self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = cst.get_true_coords(self.coords)
+        self.rect.x, self.rect.y = csc.transform_coords_to('real', self.coords)

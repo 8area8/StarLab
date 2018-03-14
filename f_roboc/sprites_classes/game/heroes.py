@@ -1,16 +1,14 @@
-"""module contenant les classes de héro."""
+"""This module contains the hero's sprite."""
 
-import pygame
-
-import constants.game_sizes as cst
+import constants.coordinates as csc
 from f_roboc.sprites_classes.main_sprite import MainSprite
 
 
 class Hero(MainSprite):
-    """Base heros class."""
+    """Base hero's class."""
 
     def __init__(self, images_group, coords, name, digit, is_yours):
-        """Init."""
+        """Initialization."""
         super().__init__()
 
         # NAME
@@ -18,7 +16,7 @@ class Hero(MainSprite):
 
         # IMAGES
         self.images_group = images_group
-        self.key_imgs = "breath"
+        self._key_image = "breath"
         self.image = self.images[self._index]
 
         # POSITION
@@ -26,7 +24,7 @@ class Hero(MainSprite):
         self._init_rect_position()
 
         # TIME PER IMAGE
-        self.get_times_per_imgs()
+        self.get_times_per_images()
 
         # SKILLS
         self.activate_skills()
@@ -38,40 +36,41 @@ class Hero(MainSprite):
     @property
     def images(self):
         """Return the actual images."""
-        return self.images_group[self.key_imgs]
+        return self.images_group[self._key_image]
 
     @property
     def abstract_coords(self):
         """Get abstract coords."""
-        return cst.get_abstract_coords(self.coords)
+        return csc.transform_coords_to('abstract', self.coords)
 
     @property
     def x(self):
-        """Return x."""
+        """Return x coordinates."""
         return self.coords[0]
 
     @property
     def y(self):
-        """Return y."""
+        """Return y coordinates."""
         return self.coords[1]
 
     @property
     def has_moove(self):
-        """Has moove."""
+        """Test if the hero has moove."""
         if self.actual_moove > 0:
             return True
         else:
             return False
 
     def activate_skills(self):
-        """Init caract."""
+        """Initialize the skills."""
         self.moove_points = 3
         self.actual_moove = self.moove_points
         self.transform_spell = True
 
-    def get_times_per_imgs(self):
+    def get_times_per_images(self):
         """Create a dict who contains max timer lists."""
         self._time_images = {}
+
         if self.name == "superstar":
             self._time_images["breath"] = [120 for x in range(5)]
             self._time_images["transform"] = [150 for x in range(4)]
@@ -85,21 +84,20 @@ class Hero(MainSprite):
         self._time_images["moove_d"] = moove[:]
         self._time_images["moove_t"] = moove[:]
 
-    def activate_hero(self, key, index_img, coords):
+    def activate_hero(self, key, index_image, coords):
         """Activate the hero's moove."""
-        self.index = index_img
+        self._index = index_image
         self.coords = coords
-        self.define_key_imgs(key)
+        self.define_key_images(key)
 
-    def define_key_imgs(self, key):
+    def define_key_images(self, key):
         """Define the hero's status."""
-        if key == self.key_imgs:
+        if key == self._key_image:
             return
 
-        if key in self.imgs.keys():
-            self.key_imgs = key
-            self.current_time_imgs = self._time_images[key]
-            self.index = 0
+        if key in self.images.keys():
+            self._key_image = key
+            self._index = 0
         else:
             raise KeyError()
 
@@ -108,28 +106,28 @@ class Hero(MainSprite):
         x, y = self.coords
         a, b = coords
         if x < a:
-            self.define_key_imgs("moove_r")
+            self.define_key_images("moove_r")
         elif x > a:
-            self.define_key_imgs("moove_l")
+            self.define_key_images("moove_l")
         elif y < b:
-            self.define_key_imgs("moove_t")
+            self.define_key_images("moove_t")
         elif y > b:
-            self.define_key_imgs("moove_d")
+            self.define_key_images("moove_d")
         else:
-            print("IN HEROES. POSITION IS THE SAME!")
+            print("In hero. Position is the same!")
         self.coords = coords
 
     def update(self):
         """Update the hero."""
         self.rect.x, self.rect.y = self.coords
-        self.image = self.images[self.index]
+        self.image = self.images[self._index]
 
-        key = self.key_imgs
+        key = self._key_image
         if key is "breath":
             self._call_method_after_timer(self._set_ping_pong_index, 33.4)
 
         if key is "transform" or "moove" in key:
             self._refresh_timer()
-            if self._current_time >= self._time_images[key][self.index]:
+            if self._current_time >= self._time_images[key][self._index]:
                 self._refresh_timer(set_zero=True)
-                self.index = (self.index + 1) % len(self.imgs[key])
+                self._index = (self._index + 1) % len(self.images[key])

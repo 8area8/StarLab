@@ -1,20 +1,20 @@
-"""Pathfinder's modul."""
+"""Pathfinder's module."""
 
 import pygame
 
-import constants.game_sizes as cst
+import constants.coordinates as csc
 
 
 class PathfindingGroup(pygame.sprite.Group):
-    """Main class."""
+    """This class find and show a possible path."""
 
     def __init__(self, image, hero, the_others):
-        """Init."""
+        """Initialization."""
         pygame.sprite.Group.__init__(self)
 
         self._hero = hero
         self._others = the_others
-        self._abs_coords = cst.ABSOLUTES_COORDS
+        self._abs_coords = csc.RELATIVES_COORDS
 
         self.path = []
 
@@ -23,67 +23,68 @@ class PathfindingGroup(pygame.sprite.Group):
 
     @property
     def case_hero(self):
-        """Case hero."""
-        return PathCase(
-            self._image, self._hero.abstract_coords, 0, is_hero=True)
+        """Hero's case."""
+        return PathCase(self._image, self._hero.abstract_coords,
+                        0, is_hero=True)
 
     def draw(self, active_turn, surface):
-        """Redefinit vite fait la méthode draw."""
+        """Run only in active_turn is True."""
         if active_turn:
             pygame.sprite.Group.draw(self, surface=surface)
 
     def active_the_pathfinding(self, mouse, case_group):
-        """Activate."""
-        if not mouse:
+        """Activate the pathfinding research."""
+        if not mouse:  # If the mouse is over the map/game.
             return
 
-        m = cst.get_abstract_coords(mouse)
-        if m == cst.get_abstract_coords(self._mouse):
+        abstract_mouse = csc.transform_coords_to('abstract', mouse)
+        if abstract_mouse == self.mouse:  # If the mouse is on the same case.
             return
 
-        self._mouse = mouse
+        self._mouse = abstract_mouse
         self._calcul_a_new_path(case_group)
 
     def _calcul_a_new_path(self, case_group):
-        """Calculate un nouveau chemin."""
-        print("on calcul un nouveau chemin.")
-        good_coords_lists = self._abs_coords[:self._hero.actual_moove]
-        possibles_cases = [[self.case_hero]]
+        """Calculate a new path."""
+        print("We calculate a new path.")
         self.empty()
         self.path = []
 
-        for i, list_coords in enumerate(good_coords_lists):
-            possibles_cases.append([])
+        coords_lists = self._abs_coords[:self._hero.actual_moove]
+        possibles_cases = [[self.case_hero]]
 
-            for coords in list_coords:
+        for i, coords_list in enumerate(coords_lists):
+            possibles_cases.append([])  # Add a new moove level
 
-                x, y = cst.get_abstract_coords(self._hero.coords)
-                r_coords = (coords[0] + x, coords[1] + y)
+            for r_x, r_y in coords_list:
 
-                if r_coords not in case_group.keys():
+                x, y = self._hero.abstract_coords
+                real_coords = (r_x + x, r_y + y)
+
+                if real_coords not in case_group.keys():  # if doesn't exist.
                     continue
-                elif case_group[r_coords].solid:
+                elif case_group[real_coords].solid:  # if it's a wall
                     continue
-                elif r_coords in [y.abstract_coords for y in self._others]:
-                    continue
+                elif real_coords in [y.abstract_coords for y in self._others]:
+                    continue  # if others heroes on this case
 
-                possibles_cases[-1].append(
-                    PathCase(self._image, r_coords, i + 1,
-                             cases=possibles_cases[-2]))
+                # We passed all tests, lets add this case to our path! <3
+                possibles_cases[-1].append(PathCase(self._image,
+                                                    real_coords, i + 1,
+                                                    cases=possibles_cases[-2]))
 
-                if not possibles_cases[-1][-1].path:
+                if not possibles_cases[-1][-1].path:  # not linked, it's alone.
                     del possibles_cases[-1][-1]
 
-                if possibles_cases[-1] is []:
+                if possibles_cases[-1] is []:  # no more cases in our list.
                     break
 
-        mouse_coords = cst.get_abstract_coords(self._mouse)
         for cases_list in possibles_cases:
             for case in cases_list:
 
-                if mouse_coords == case.coords:
-                    print("chemin possible !!!")
-                    print("chemin:", case.path)
+                if self._mouse == case.coords:
+                    print("Path found!")
+                    print("\nPath:", case.path)
                     self.path = case.path
 
                     for case in self.path:
@@ -92,18 +93,18 @@ class PathfindingGroup(pygame.sprite.Group):
 
 
 class PathCase(pygame.sprite.Sprite):
-    """Class."""
+    """The sprite class for the path cases."""
 
     def __init__(self, image, coords, distance, cases=None, is_hero=False):
-        """Init."""
+        """Initialization."""
         pygame.sprite.Sprite.__init__(self)
 
         self.coords = coords
-        self.distance = distance
-        self.is_hero = is_hero
+        self._distance = distance
+        self._is_hero = is_hero
 
         self.path = []
-        self.neighbour_coords = []
+        self._neighbour_coords = []
 
         if cases:
             self.image = image
@@ -118,7 +119,7 @@ class PathCase(pygame.sprite.Sprite):
 
     def get_path(self, cases):
         """Get the best path to go to this case."""
-        if self.is_hero:
+        if self._is_hero:
             self.path.append(self)
             return
 
@@ -127,10 +128,10 @@ class PathCase(pygame.sprite.Sprite):
         top = (self.x, self.y - 1)
         down = (self.x, self.y + 1)
 
-        self.neighbour_coords = [left, right, top, down]
+        self._neighbour_coords = [left, right, top, down]
 
         for case in cases:
-            for coords in self.neighbour_coords:
+            for coords in self._neighbour_coords:
                 if coords == case.coords:
                     self.path = case.path[:]
                     self.path.append(self)
@@ -149,4 +150,4 @@ class PathCase(pygame.sprite.Sprite):
     @property
     def true_coords(self):
         """Return reals coords."""
-        return cst.get_true_coords(self.coords)
+        return csc.transform_coords_to('real', self.coords)

@@ -42,8 +42,8 @@ class NextTurn(MainSprite):
                 self.image = self.images[self._index]
 
 
-class TransformAnimSprite(MainSprite):
-    """Transform sprite animation.
+class TransformAnim(MainSprite):
+    """Transform animation.
 
     To use it:
         - First define the (real) coordinates of the animation.
