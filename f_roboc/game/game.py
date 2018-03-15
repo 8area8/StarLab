@@ -39,6 +39,8 @@ class Game(Interface):
         # EVENT OBJECTS
         self._events = EventsController(self)
 
+        self.active_player.activate_skills()
+
     @property
     def active_player(self):
         """Return the active player."""
@@ -81,6 +83,7 @@ class Game(Interface):
         msg = self.connection.receive()
 
         self._show_moove_or_transform()
+        self.sprt.moove_digit.define_text(text=str(self.my_hero.actual_moove))
 
         if self.active_turn:
             self.sprt.menu = self.sprt.menu_blue

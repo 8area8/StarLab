@@ -77,7 +77,7 @@ class DynamicTextButton(TextButton):
 
     def __init__(self, text, size, x, y):
         """Initialization."""
-        TextButton.__init__(self, text, size, "white", "blue", x, y)
+        TextButton.__init__(self, text, size, "blue", "blue", x, y)
 
     def update(self, *args):
         """Unused."""

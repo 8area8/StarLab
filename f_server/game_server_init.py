@@ -115,9 +115,9 @@ class GameServerInit:
             if "players_informations?" not in player["msg"]:
                 continue
 
-            self.turn = random.randint(1, self.nb_players)
+            self.turn = 1
             player['to_send'] = ("players_infos_ok: "
-                                 f"active_turn:{self.turn} "
+                                 f"active_turn:{1} "
                                  f"player_digit:{player['digit']} "
                                  f"nb_players:{self.nb_players}")
 

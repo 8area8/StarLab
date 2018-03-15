@@ -67,8 +67,8 @@ class GameSprites:
             self.images["transform"], "transform_anim")
 
         self.moove_digit = DynamicTextButton(
-            "1zrthertzhz", 20,
-            167 * csizes.UPSCALE, 300 * csizes.UPSCALE)
+            "1", 22,
+            168 * csizes.UPSCALE, 288)
 
         self.menu_layer_1 = pygame.sprite.Group()
         self.menu_layer_1.add(self.time)
