@@ -1,9 +1,10 @@
 """Game server module."""
 
 from f_server.time import TimeController
-from f_server.heroes_actions import Transform, Moove
+from f_server.heroes_actions import Transform, Moove, Teleportation
 
 import constants.find as csfind
+import constants.coordinates as csc
 
 
 class GameServer:
@@ -21,11 +22,13 @@ class GameServer:
         self._timer = TimeController()
         self.transform = Transform()
         self.moove = Moove()
+        self.teleport = Teleportation()
 
         # GAME INFORMATIONS
         self._map = _map
         self.index_turns = turn - 1
         self.in_event = False
+        self.victory = False
 
     @property
     def map_string(self):
@@ -65,6 +68,9 @@ class GameServer:
         self.connection.send()
         self.connection.re_initialize_players_messages()
 
+        if self.victory:
+            self.go_to = 'default'
+
     def _events(self):
         """Get the active player's message and call the desired event.
 
@@ -88,16 +94,40 @@ class GameServer:
             directions = csfind.find_text_after('directions:', msg)
             hero_coords = csfind.find_and_get_coords_after('hero_coords:', msg)
 
+            tp = None
+            if 'teleporter:' in msg:
+                tp = csfind.find_and_get_coords_after('teleporter:', msg)
+            victory = True if "victory" in msg else False
+
             print(hero_coords)
-            self.moove.init_moove(hero_coords, directions)
+            self.moove.init_moove(hero_coords, directions, tp, victory)
 
     def _update(self):
         """The event updates."""
+        co = self.connection
+
         if self.in_event:
             self.connection.global_message += self.transform.update()
             self.connection.global_message += self.moove.update()
+            self.connection.global_message += self.teleport.update()
 
+        self._active_teleportation(co.global_message)
         self.get_next_time()
 
-        if "end" in self.connection.global_message:
-            self.in_event = False
+        self.victory = True if 'victory!' in co.global_message else False
+
+        if "end" in co.global_message:
+            if 'teleportation' not in co.global_message:
+                self.in_event = False
+
+    def _active_teleportation(self, msg):
+        """Activate the teleportation."""
+        if 'teleportation' in msg:
+            coords = csfind.find_and_get_coords_after('teleportation:', msg)
+
+            if self.active_player['digit'] == 1:
+                name = 'superstar'
+            else:
+                name = 'superalien'
+
+            self.teleport.activate(coords, name)

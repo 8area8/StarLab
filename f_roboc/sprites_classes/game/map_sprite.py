@@ -47,3 +47,9 @@ class MapSprites(pygame.sprite.Group):
     def keys(self):
         """Return the self._coord key."""
         return self._coords.keys()
+
+    def find_another_teleporter(self, tp_coords):
+        """Return another teleporter."""
+        for case in self.sprites():
+            if case.nature == "teleporter" and case.coords != tp_coords:
+                return case.coords

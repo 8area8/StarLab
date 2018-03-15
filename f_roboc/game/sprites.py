@@ -13,6 +13,8 @@ from f_roboc.sprites_classes.game.buttons_menu import BullSprite, TimeSprite
 from f_roboc.sprites_classes.game.buttons_menu import TransformButton
 from f_roboc.sprites_classes.game.others_animations import NextTurn
 from f_roboc.sprites_classes.game.others_animations import TransformAnim
+from f_roboc.sprites_classes.game.others_animations import SpaceShip
+from f_roboc.sprites_classes.game.others_animations import Victory
 from f_roboc.sprites_classes.text_button import DynamicTextButton
 
 
@@ -70,6 +72,12 @@ class GameSprites:
             "1", 22,
             168 * csizes.UPSCALE, 288)
 
+        self.victory = Victory(
+            self.images["victory"],
+            (52 * csizes.UPSCALE, 17 * csizes.UPSCALE))
+
+        self.ship = None
+
         self.menu_layer_1 = pygame.sprite.Group()
         self.menu_layer_1.add(self.time)
 
@@ -105,6 +113,7 @@ class GameSprites:
                 elif word == 'T':
                     nature = 'teleporter'
                 elif word == 'V':
+                    ship_coords = true_coords
                     nature = 'victory'
                 else:
                     raise ValueError("the map contains an invalid caracter."
@@ -120,6 +129,9 @@ class GameSprites:
 
         print('map created.')
         print(self.cases_group)
+
+        self.ship = SpaceShip(self.images["items"], ship_coords)
+        self.menu_layer_2.add(self.ship)
 
     def init_heroes(self, players):
         """Initialize each hero."""

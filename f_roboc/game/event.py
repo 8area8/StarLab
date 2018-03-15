@@ -21,6 +21,13 @@ class EventsController:
         pathfinder = self.game.sprt.pathfinder
         c_grp = self.game.sprt.cases_group
 
+        if self.game.victory:
+            if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                button = self.game.sprt.victory.button
+                if button.rect.collidepoint(mouse):
+                    self.game.go_to = 'main_menu'
+            return
+
         if not self.game.active_turn or self.game.in_action:
             return
 
@@ -80,9 +87,15 @@ class EventsController:
                                 raise ValueError("Target case == current.")
 
                         last_c = coords_path[-1]
+                        coords = csc.transform_coords_to('real', last_c)
+
                         if c_grp[last_c].nature == "teleporter":
-                            c_grp.find_another_teleporter(last_c)
-                            str_moove += " teleporter "
+                            coords = c_grp.find_another_teleporter(coords)
+                            coords = csc.transform_coords_to('string', coords)
+                            str_moove += f" teleporter:{coords} "
+
+                        elif c_grp[last_c].nature == "victory":
+                            str_moove += " victory "
 
                         self.game.msg += str_moove
                         return

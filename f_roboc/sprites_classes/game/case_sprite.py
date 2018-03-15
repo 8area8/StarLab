@@ -99,7 +99,7 @@ class CaseSprite(pygame.sprite.Sprite):
         if self.name not in ["teleporter", "wall_rare"]:
             return
 
-        over = 100 if self.name == 'teleporter' else 250
+        over = 100 if self.name == 'teleporter' else 120
 
         self._current_time += 33.4
         if self._current_time >= over:

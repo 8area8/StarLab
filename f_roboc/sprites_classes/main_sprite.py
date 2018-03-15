@@ -9,7 +9,7 @@ class MainSprite(pygame.sprite.Sprite):
     Contains a lot of preconfigured methods.
     """
 
-    def __init__(self, hero=False):
+    def __init__(self, no_images=False):
         """Initialize the class."""
         super().__init__()
 
@@ -18,7 +18,7 @@ class MainSprite(pygame.sprite.Sprite):
 
         # IMAGES
         self.image = NotImplemented
-        if not hero:
+        if not no_images:
             self.images = None
         self._no_image = pygame\
             .Surface([1, 1], pygame.SRCALPHA, 32)\
@@ -173,6 +173,15 @@ class Button(MainSprite):
 
         self.coords = coords
         self._init_rect_position()
+
+    def adjust_rect_position(self, coords):
+        """Use it if the button is a subsprite."""
+        x, y = coords
+        a, b = self.coords
+        a += x
+        b += y
+        self.rect.x = a
+        self.rect.y = b
 
     def update(self, *arg):
         """Update the sprite."""

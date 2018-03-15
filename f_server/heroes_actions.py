@@ -86,11 +86,18 @@ class Moove:
         self.v_x = 0
         self.v_y = 0
 
-    def init_moove(self, hero_coords, directions):
+        # END MOOVE OPTIONS
+        self.tp = None
+        self.victory = False
+
+    def init_moove(self, hero_coords, directions, tp, victory):
         """Initalization of the movement.
 
         Create a list of coordinates.
         """
+        self.tp = csc.transform_coords_to('string', tp) if tp else None
+        self.victory = victory
+
         self.v_x = 0
         self.v_y = 0
         self.index = 0
@@ -131,6 +138,11 @@ class Moove:
             if self.index == len(self.list_coords):
                 self.activated = False
                 msg += "end "
+
+                if self.victory:
+                    msg += " victory! "
+                elif self.tp:
+                    msg += f" teleportation:{self.tp} "
                 return msg
 
             self.init_direction()
@@ -161,3 +173,62 @@ class Moove:
             self.v_y = 4
         else:
             raise ValueError("invalid letter.")
+
+
+class Teleportation:
+    """Teleportation class."""
+
+    def __init__(self):
+        """Initialization."""
+        self.coords = ()
+
+        self.activated = False
+        self.name = ""
+
+        self.key = 'starting'
+        self.index = 0
+        self.current_time = 0.0
+
+    def activate(self, coords, name):
+        """Activate the teleportation."""
+        self.coords = csc.transform_coords_to('string', coords)
+        self.activated = True
+        self.index = 0
+        self.key = 'starting'
+        self.name = name
+
+    def update(self):
+        """Update the teleportation."""
+        if not self.activated:
+            return ""
+
+        if self.name == "superstar":
+            max_imgs = {"starting": 23, "landed": 13}
+        else:
+            max_imgs = {"starting": 20, "landed": 10}
+
+        msg = "teleport:"
+
+        self.current_time += 33.4
+        if not self.current_time >= 100:
+            return ""
+
+        self.current_time = 0.0
+
+        if self.index < max_imgs[self.key]:
+            index = str(self.index)
+            index = '0' + index if self.index < 10 else index
+            msg += f"{self.key}:{index} "
+            self.index += 1
+
+        else:
+
+            if self.key == "starting":
+                msg += f"teleportNow:{self.coords} "
+                self.key = "landed"
+                self.index = 0
+            else:
+                msg += "end"
+                self.activated = False
+
+        return msg if msg != 'teleport:' else ''

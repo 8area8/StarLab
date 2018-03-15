@@ -9,7 +9,7 @@ class Hero(MainSprite):
 
     def __init__(self, images_group, coords, name, digit, is_yours):
         """Initialization."""
-        super().__init__(hero=True)
+        super().__init__(no_images=True)
 
         # NAME
         self.name = name
@@ -116,6 +116,15 @@ class Hero(MainSprite):
         else:
             print("In hero. Position is the same!")
         self.coords = coords
+
+    def teleport(self, key=None, index=None, coords=None):
+        """Teleport the hero."""
+        if coords:
+            self.coords = coords
+            return
+
+        self.define_key_images(key)
+        self._index = index
 
     def update(self):
         """Update the hero."""

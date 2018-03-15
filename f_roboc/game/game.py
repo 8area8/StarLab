@@ -28,6 +28,7 @@ class Game(Interface):
         # GAME INFORMATIONS
         self.turn_digit = turn_digit
         self.in_action = False
+        self.victory = ""
 
         # SPRITES INITIALIZATION.
         self.sprt = GameSprites(images)
@@ -71,11 +72,11 @@ class Game(Interface):
     @Interface._secured_connection
     def start_events(self, event, mouse):
         """Events call."""
+        self.msg = ''
         self._events.start(event, mouse)
 
         # We now send the message.
         self.connection.send(self.msg)
-        self.msg = ''
 
     @Interface._secured_connection
     def update(self):
@@ -96,10 +97,23 @@ class Game(Interface):
             self._update_transform(msg)
         if "moove" in msg:
             self._update_moove(msg)
+        if "victory!" in msg:
+            self._update_victory()
+        if 'teleport:' in msg:
+            self._update_teleport(msg)
 
         self.sprt.cases_group.update()
         self.sprt.menu_layer_2.update(self.active_turn)
         self.sprt.heroes_grp.update()
+
+        if self.sprt.ship.end:
+            self.sprt.victory.activate(self.active_turn, self.my_hero.name)
+        self.sprt.victory.update()
+
+    def _update_victory(self):
+        """Update the victory."""
+        self.victory = "True" if self.active_turn else "False"
+        self.sprt.ship.activate()
 
     def _update_time(self, msg):
         """Update time and turns."""
@@ -110,6 +124,21 @@ class Game(Interface):
             self.turn_digit = csfind.find_number_after("next_turn:", msg)
             self.sprt.next_turn.activate()
             self.active_player.activate_skills()
+
+    def _update_teleport(self, msg):
+        """Update the teleportation."""
+        if "end" in msg:
+            self.in_action = False
+            self.active_player.define_key_images("breath")
+            return
+
+        if "teleportNow:" in msg:
+            coords = csfind.find_and_get_coords_after('teleportNow:', msg)
+            self.active_player.teleport(coords=coords)
+        else:
+            key = 'starting' if 'starting' in msg else 'landed'
+            index = csfind.find_number_after(f"{key}:", msg, size=2)
+            self.active_player.teleport(key, index)
 
     def _update_transform(self, msg):
         """Update the transform action."""
@@ -167,3 +196,6 @@ class Game(Interface):
         self.sprt.main_surface.blit(self.sprt.menu, (0, 0))
         self.sprt.menu_layer_1.draw(self.sprt.main_surface)
         self.sprt.menu_layer_2.draw(self.sprt.main_surface)
+
+        victory = self.sprt.victory
+        self.sprt.main_surface.blit(victory.image, victory.coords)

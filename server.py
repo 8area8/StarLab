@@ -64,7 +64,8 @@ class BaseServer:
                 self._server = SimpleServer(self._socket,
                                             self.clients_sockets)
                 clear_the_shell()
-                print('Connection error.\nServer reinitialized.')
+                print('Connection error or max connection exceeded.'
+                      '\nServer reinitialized.')
 
             self.clock.tick(30)
 
@@ -76,6 +77,7 @@ class BaseServer:
         For performances issues, i stop the clients connexion after 4 clients.
         """
         if self.clients_sockets and len(self.clients_sockets) > 4:
+            raise OSError
             return
 
         wanted_connexions, wlist, xlist = select.select([self._socket],
@@ -105,7 +107,10 @@ class BaseServer:
                                       self._server.turn)
 
         elif self._server.go_to == 'default':
+            self.clients_sockets = []
             self._server = SimpleServer(self._socket, self.clients_sockets)
+            clear_the_shell()
+            print("Finished game.\nServer reinitialized.")
 
     def _test_clients(self):
         """Test if each client is connected."""
