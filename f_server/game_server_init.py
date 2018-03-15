@@ -16,6 +16,7 @@ class GameServerInit:
         # MAP AND PLAYER NUMBERS
         self.nb_players = nb_players
         self._map = _map
+        self.turn = 0
 
         # CONNECTION
         self.player_sockets = [host_player]
@@ -114,9 +115,9 @@ class GameServerInit:
             if "players_informations?" not in player["msg"]:
                 continue
 
-            turn = random.randint(1, self.nb_players)
+            self.turn = random.randint(1, self.nb_players)
             player['to_send'] = ("players_infos_ok: "
-                                 f"active_turn:{turn} "
+                                 f"active_turn:{self.turn} "
                                  f"player_digit:{player['digit']} "
                                  f"nb_players:{self.nb_players}")
 
@@ -138,14 +139,15 @@ class GameServerInit:
         """
         self.connection.global_message += "players_list: "
 
-        max_spawns = self._map.count(".")
+        _map = self._map.replace('Q', '')
+        max_spawns = _map.count(".")
         print(f"There are {max_spawns} spawners.")
         spawn_numbers = list(range(1, max_spawns))
 
         for player in self.players:
 
             number = self._get_unique_number(spawn_numbers)
-            index = self._get_the_spawn_position(number)
+            index = self._get_the_spawn_position(number, _map)
 
             # Create a string treatable version
             zeros = ''.join(['0' for x in range(3) if index < 10**x])
@@ -164,12 +166,12 @@ class GameServerInit:
 
         return n
 
-    def _get_the_spawn_position(self, number):
+    def _get_the_spawn_position(self, number, _map):
         """Return the spawn position from its number."""
         index = 0
 
         for x in range(number):
-            index = self._map.find('.', index) + 1
+            index = _map.find('.', index) + 1
 
         print('n index in equal to', index - 1)
         return index - 1

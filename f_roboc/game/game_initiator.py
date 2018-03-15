@@ -152,8 +152,8 @@ class GameInitiator(Interface):
             is_yours = True if self.player_digit == i else False
             name = 'superstar' if i == 1 else 'superalien'
 
-            spawn = fd.find_and_get_coords_after(f"player{i}_place:", msg)
-            print("dans g_i. spawn du joueur: ", spawn)
+            spawn = fd.find_number_after(f"player{i}_place:", msg, size=3)
+            print("in g_i. player's spawn: ", spawn)
 
             self.players.append([i, name, is_yours, spawn])
 

@@ -38,7 +38,7 @@ class PathfindingGroup(pygame.sprite.Group):
             return
 
         abstract_mouse = csc.transform_coords_to('abstract', mouse)
-        if abstract_mouse == self.mouse:  # If the mouse is on the same case.
+        if abstract_mouse == self._mouse:  # If the mouse is on the same case.
             return
 
         self._mouse = abstract_mouse
@@ -100,7 +100,7 @@ class PathCase(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.coords = coords
-        self._distance = distance
+        self.distance = distance
         self._is_hero = is_hero
 
         self.path = []

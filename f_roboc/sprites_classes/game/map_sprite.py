@@ -8,40 +8,35 @@ import pygame
 
 
 class MapSprites(pygame.sprite.Group):
-    """La classe du module.
+    """The module class.
 
-    C'est une classe 'Group' de pygame.sprite, à laquelle j'implémente
-    un dictionnaire pour mieux la controler/parcourir.
+    It is as 'Group' from pygame.sprite, to wich i implement
+    a dictionnary to better control/browse.
     """
 
     def __init__(self):
-        """Initialisation."""
+        """Initialization."""
         pygame.sprite.Group.__init__(self)
 
         self._coords = {}
 
     def __getitem__(self, key):
-        """Permet de récupérer simplement une valeur du groupe.
+        """Allows you to simply retrieve a value from the group.
 
-        On utilisera "MapSprite[key]".
+        We will use "MapSprite[key]".
         """
         if key in self._coords:
             return self._coords[key]
         else:
-            raise KeyError("La clé '{0}' n'existe pas!".format(key))
+            raise KeyError(f"The key '{key}' doesn't exist!")
 
     def __setitem__(self, key, value):
-        """Permet d'ajouter simplement des valeurs au groupe.
+        """Allows you to add values ​​to the group.
 
-        On utilisera "MapSprite[key] = value"
+        We'll use "MapSprite[key] = value"
 
-        la clé doit être un tuple correspondant à des coordonnées,
-        et la valeur une instance de LabyrinthSprite.
-
-        Le premier teste regarde si la clé existe déjà (donc
-        si on a déjà définit cette coordonnée): si elle
-        existe, on enlève la valeur correspondante (qui est un sprite)
-        au groupe de sprites.
+        The key must be a tuple that's correspond to coordinates,
+        and the value an instance of LabyrinthSprite.
         """
         if key in self._coords:
             self.remove(self.coords[key])
@@ -50,5 +45,5 @@ class MapSprites(pygame.sprite.Group):
         self._coords[key] = value
 
     def keys(self):
-        """Retoune les clés de self._coord."""
+        """Return the self._coord key."""
         return self._coords.keys()

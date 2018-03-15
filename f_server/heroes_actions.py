@@ -19,14 +19,14 @@ class Transform:
         self.pingpong = 'ping'
 
         # TRANSFORM COORDINATES
-        self.str_coords = ""
+        self.s_coords = ""
 
-    def activate(self, str_coords):
+    def activate(self, coords):
         """Event activation."""
         self.activated = True
-        self.str_coords = str_coords
+        self.s_coords = csc.transform_coords_to('string', coords)
 
-        return f"transform:activated coords:{str_coords}"
+        return f"transform: activated coords:{self.s_coords}"
 
     def update(self):
         """Event update.
@@ -48,7 +48,7 @@ class Transform:
         if self.pingpong == 'ping':
             if self.index == 8:
                 self.pingpong = 'pong'
-                msg += f"transfNow:{self.str_coords}"
+                msg += f"transfNow:{self.s_coords}"
             else:
                 self.index += 1
                 msg += f"index:{self.index}"
@@ -123,7 +123,7 @@ class Moove:
         if not self.activated:
             return ""
 
-        msg = 'moove: '
+        msg = 'moove:'
 
         if self.hero_coords == self.list_coords[self.index][0]:
             self.index += 1
@@ -143,7 +143,7 @@ class Moove:
 
         msg += csc.transform_coords_to('string', self.hero_coords)
 
-        return msg if msg != 'moove: ' else ''
+        return msg if msg != 'moove:' else ''
 
     def init_direction(self):
         """Initialize a new direction according by the index."""

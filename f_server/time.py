@@ -1,15 +1,15 @@
-"""Gere le temps."""
+"""Rules the time."""
 
 
 class TimeController:
-    """Main class."""
+    """The timer class."""
 
     def __init__(self):
-        """Init."""
+        """Initialization."""
         self.init_zero()
 
     def update(self, player_msg, in_action):
-        """Mise à jour."""
+        """Update the time."""
         if "next_turn" in player_msg:
             self.init_zero()
             return "next_turn"
@@ -35,7 +35,7 @@ class TimeController:
         return msg
 
     def init_zero(self):
-        """Initialize at 0."""
+        """Set to 0."""
         self.current_milliseconds = 0.0
 
         self.current_dixseconds = 0

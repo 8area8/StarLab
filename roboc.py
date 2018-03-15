@@ -93,7 +93,8 @@ def _change_interface(interface, images, connection):
 
     elif interface.go_to == 'game':
         interface = Game(images["game"], connection,
-                         interface.players, interface._map)
+                         interface.players, interface._map,
+                         interface.active_turn)
 
     else:
         raise ValueError("'go_to' must be equal to 'main_menu', "

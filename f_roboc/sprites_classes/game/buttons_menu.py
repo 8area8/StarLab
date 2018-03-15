@@ -12,21 +12,21 @@ class TimeSprite(MainSprite):
         - don't forget to give the 'active_turn' parameter to the function.
     """
 
-    def __init__(self, images, coords, name):
+    def __init__(self, images, coords):
         """Initialization."""
         super().__init__()
 
         # IMAGES
         self.images = images[10:]
         self.passive_images = images[:10]
-        self.image = self.images[self.index]
+        self.image = self.images[self._index]
 
         # POSITION
         self.coords = coords
         self._init_rect_position()
 
         # NAME
-        self.name = name
+        self.name = "time"
 
     def choose_index(self, index, active_turn):
         """Update the sprite image."""
@@ -44,5 +44,14 @@ class BullSprite(ButtonGame):
 
     def __init__(self, images, coords):
         """Initialization."""
-        super().__init__(images[14], images[13], images[:11],
-                         images[15], coords, 'bull')
+        super().__init__(images[13], images[12], images[:12],
+                         images[14], coords, 'bull', max_timer=100)
+
+
+class TransformButton(ButtonGame):
+    """The transform button class."""
+
+    def __init__(self, images, coords):
+        """Initialization."""
+        super().__init__(images[5], images[4], images[:4],
+                         images[6], coords, 'transform', max_timer=500)

@@ -9,7 +9,7 @@ class Hero(MainSprite):
 
     def __init__(self, images_group, coords, name, digit, is_yours):
         """Initialization."""
-        super().__init__()
+        super().__init__(hero=True)
 
         # NAME
         self.name = name
@@ -95,7 +95,7 @@ class Hero(MainSprite):
         if key == self._key_image:
             return
 
-        if key in self.images.keys():
+        if key in self.images_group.keys():
             self._key_image = key
             self._index = 0
         else:
@@ -110,9 +110,9 @@ class Hero(MainSprite):
         elif x > a:
             self.define_key_images("moove_l")
         elif y < b:
-            self.define_key_images("moove_t")
-        elif y > b:
             self.define_key_images("moove_d")
+        elif y > b:
+            self.define_key_images("moove_t")
         else:
             print("In hero. Position is the same!")
         self.coords = coords
@@ -124,10 +124,17 @@ class Hero(MainSprite):
 
         key = self._key_image
         if key is "breath":
-            self._call_method_after_timer(self._set_ping_pong_index, 33.4)
+            self._refresh_timer()
+            if self._current_time >= self._time_images[key][self._index]:
+                self._refresh_timer(set_zero=True)
+                self._set_ping_pong_index(len_img=self._return_len_images())
 
         if key is "transform" or "moove" in key:
             self._refresh_timer()
             if self._current_time >= self._time_images[key][self._index]:
                 self._refresh_timer(set_zero=True)
-                self._index = (self._index + 1) % len(self.images[key])
+                self._index = (self._index + 1) % len(self.images)
+
+    def _return_len_images(self):
+        """Simply return the len of current images key."""
+        return len(self.images) - 1

@@ -35,14 +35,12 @@ class TextButton(pygame.sprite.Sprite):
 
         self.define_text()
 
-    def define_text(self, activated=False):
+    def define_text(self, activated=False, text=None):
         """Colle le texte sur une surface."""
-        if activated:
-            color = self.active_color
-        else:
-            color = self.color
+        text = text if text else self.text
+        color = self.active_color if activated else self.color
 
-        self.image = self.font.render(self.text, 0, color)
+        self.image = self.font.render(text, 0, color)
 
     def update(self):
         """Mise à jour."""
@@ -59,16 +57,31 @@ class TextButton(pygame.sprite.Sprite):
 
 
 class TextMapButton(TextButton):
-    """La classe qui gère les boutons de choix de la map."""
+    """Rule the map buttons. Contains the map."""
 
     def __init__(self, text, size, color, active_color, x,
                  y, contents, absolute_x=0, absolute_y=0, w_container=None):
-        """Initialisation."""
+        """Initialization."""
         TextButton.__init__(self, text, size, color,
                             active_color, x, y, absolute_x,
                             absolute_y, w_container)
 
         self.contents = contents
+
+
+class DynamicTextButton(TextButton):
+    """Ultra basic.
+
+    Just use the define_text method with text argument.
+    """
+
+    def __init__(self, text, size, x, y):
+        """Initialization."""
+        TextButton.__init__(self, text, size, "white", "blue", x, y)
+
+    def update(self, *args):
+        """Unused."""
+        pass
 
 
 def center_rect(w_rect_to_center, w_rect_container):
@@ -79,6 +92,5 @@ def center_rect(w_rect_to_center, w_rect_container):
     w_rect_to_center = w_rect_to_center / 2
     w_rect_container = w_rect_container / 2
     x_position = w_rect_container - w_rect_to_center
-    if x_position < 0:
-        x_position = 0
-    return x_position
+
+    return x_position if x_position >= 0 else 0

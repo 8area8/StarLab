@@ -1,7 +1,5 @@
 """Contains the parent class Interface."""
 
-from f_roboc.connection import ServerConnection
-
 
 class Interface:
     """That class is a base class for the others interfaces."""
@@ -40,10 +38,10 @@ class Interface:
         with -LosConnection's argument.
         """
 
-        def wrapper(self):
+        def wrapper(self, *args):
             """Wrapp transfer_datas."""
             try:
-                transfer_datas(self)
+                transfer_datas(self, *args)
             except OSError as e:
                 print(f"Failed connection.\nError: {e}")
 

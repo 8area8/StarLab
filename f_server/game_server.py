@@ -1,7 +1,5 @@
 """Game server module."""
 
-import pygame
-
 from f_server.time import TimeController
 from f_server.heroes_actions import Transform, Moove
 
@@ -11,7 +9,7 @@ import constants.find as csfind
 class GameServer:
     """This classe manages the server in game."""
 
-    def __init__(self, connection, _map):
+    def __init__(self, connection, _map, turn):
         """Initialization of the class."""
         self.go_to = ''
 
@@ -26,7 +24,7 @@ class GameServer:
 
         # GAME INFORMATIONS
         self._map = _map
-        self.index_turns = 0
+        self.index_turns = turn - 1
         self.in_event = False
 
     @property
@@ -49,13 +47,12 @@ class GameServer:
 
         if "next_turn" in result:
             self.index_turns = (self.index_turns + 1) % len(self.players)
-            msg = "next_turn:{} time:0 ".format(self.active_player["digit"])
+            msg = f"next_turn:{self.active_player['digit']} time:0 "
 
         if not msg:
             return
 
-        for player in self.players:
-            player['to_send'] += msg
+        self.connection.global_message += msg
 
     def run_a_turn(self):
         """Run a turn in the server's loop."""
@@ -81,9 +78,9 @@ class GameServer:
         if "transform:" in msg:
 
             self.in_event = True
-            s_coords = csfind.find_str_coords_after('transform:', msg)
+            coords = csfind.find_and_get_coords_after('transform:', msg)
 
-            self.connection.global_message = self.transform.activate(s_coords)
+            self.connection.global_message = self.transform.activate(coords)
 
         if "moove" in msg:
 

@@ -1,5 +1,6 @@
 """This module regroup all animated info sprites."""
 
+from constants import coordinates as csc
 from f_roboc.sprites_classes.main_sprite import MainSprite
 
 
@@ -30,7 +31,7 @@ class NextTurn(MainSprite):
         """Update the sprite."""
         if self.activated:
             self._refresh_timer()
-            if self.current_time >= self.time_per_img[self._index]:
+            if self._current_time >= self.time_per_img[self._index]:
                 self._refresh_timer(set_zero=True)
                 self._index += 1
 
@@ -64,11 +65,11 @@ class TransformAnim(MainSprite):
 
     def define_coords(self, coords):
         """Define the coordinates."""
-        self.rect.x, self.rect.y = coords
+        self.rect.x, self.rect.y = csc.transform_coords_to('real', coords)
 
     def play_animation(self, index=None, end=False):
         """Update the animation."""
         if not end:
             self.image = self.images[index]
         else:
-            self.image = self.no_image
+            self.image = self._no_image

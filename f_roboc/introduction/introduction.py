@@ -31,7 +31,7 @@ class Introduction(Interface):
     def update(self):
         """Update."""
         self._refresh_timer()
-        if self._is_timer_over(2000) and self._play_movie:
+        if self._is_timer_over(700) and self._play_movie:
             self._play_movie = False
             movie.play_video()
             self.go_to = 'main_menu'
@@ -40,5 +40,5 @@ class Introduction(Interface):
         """Draw."""
         self.sprt.main_surface.fill((0, 0, 0))
 
-        if self._current_time < 2000:
+        if self._current_time < 700:
             self.sprt.main_surface.blit(self.sprt.presentation, (0, 0))

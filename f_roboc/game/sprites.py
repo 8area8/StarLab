@@ -4,14 +4,16 @@ import pygame
 
 import constants.game_sizes as csizes
 
-from f_roboc.sprites_classes.game.buttons_menu import BullSprite, TimeSprite
 from f_roboc.sprites_classes.game.case_sprite import CaseSprite
 from f_roboc.sprites_classes.game.heroes import Hero
 from f_roboc.sprites_classes.game.map_sprite import MapSprites
 from f_roboc.sprites_classes.game.pathfinder import PathfindingGroup
 from f_roboc.sprites_classes.game.Transform_paths import SearchTransformPaths
-from f_roboc.sprites_classes.game.others_animations import (NextTurn,
-                                                            TransformAnim)
+from f_roboc.sprites_classes.game.buttons_menu import BullSprite, TimeSprite
+from f_roboc.sprites_classes.game.buttons_menu import TransformButton
+from f_roboc.sprites_classes.game.others_animations import NextTurn
+from f_roboc.sprites_classes.game.others_animations import TransformAnim
+from f_roboc.sprites_classes.text_button import DynamicTextButton
 
 
 class GameInitSprites:
@@ -41,32 +43,32 @@ class GameSprites:
         self.cases_group = MapSprites()
         self.heroes_grp = pygame.sprite.Group()
 
-        self.menu_blue = self.images["menu"]["super_menu"]
-        self.menu_grey = self.images["menu"]["super_menu_grey"]
+        self.menu_blue = self.images["menu"]["base_menu"][0]
+        self.menu_grey = self.images["menu"]["base_menu"][1]
         self.menu = self.menu_blue
 
         self.time = TimeSprite(
             self.images["menu"]["time"],
-            (274 * csizes.UPSCALE, 284 * csizes.UPSCALE),
-            "time")
+            (274 * csizes.UPSCALE, 284 * csizes.UPSCALE))
 
         self.bull = BullSprite(
             self.images["menu"]["bull"],
-            (291 * csizes.UPSCALE, 300 * csizes.UPSCALE),
-            "bull")
+            (291 * csizes.UPSCALE, 300 * csizes.UPSCALE))
 
         self.next_turn = NextTurn(
             self.images["menu"]["next_turn"],
-            (13 * csizes.UPSCALE, 20 * csizes.UPSCALE),
-            "next_turn")
+            (13 * csizes.UPSCALE, 20 * csizes.UPSCALE))
 
-        self.transform = TransformSprite(
+        self.transform = TransformButton(
             self.images["menu"]["transform"],
-            (189 * csizes.UPSCALE, 306 * csizes.UPSCALE),
-            "transform")
+            (189 * csizes.UPSCALE, 306 * csizes.UPSCALE))
 
         self.transform_anim = TransformAnim(
             self.images["transform"], "transform_anim")
+
+        self.moove_digit = DynamicTextButton(
+            "1zrthertzhz", 20,
+            167 * csizes.UPSCALE, 300 * csizes.UPSCALE)
 
         self.menu_layer_1 = pygame.sprite.Group()
         self.menu_layer_1.add(self.time)
@@ -76,18 +78,19 @@ class GameSprites:
             self.bull,
             self.next_turn,
             self.transform,
-            self.transform_anim)
+            self.transform_anim,
+            self.moove_digit)
 
         self.pathfinder = None
         self.transform_paths = None
 
     def create_map(self, map_contents):
-        """Incorpore chaque case dans un groupe de sprite."""
+        """Create the map."""
         x = 0
         y = 0
         nature = ''
         true_coords = ()
-        number = 1
+        number = 0
 
         for line in map_contents:
 
@@ -108,8 +111,9 @@ class GameSprites:
                                      " valid caracters: '.', 'O', 'T',"
                                      "' ' and 'V'.")
 
-                self.cases_group[x, y] = CaseSprite(self.images["bg"], nature,
-                                                    true_coords, number)
+                self.cases_group[x, y] = CaseSprite(self.images["background"],
+                                                    nature, true_coords,
+                                                    number)
                 x += 1
                 number += 1
             y += 1
@@ -118,8 +122,9 @@ class GameSprites:
         print(self.cases_group)
 
     def init_heroes(self, players):
-        """Initialise le héro du joueur."""
+        """Initialize each hero."""
         for player in players:
+            print("player digit!! ", player[3])
             for case in self.cases_group.sprites():
                 if case.number == player[3]:
                     coords = case.coords
@@ -127,7 +132,7 @@ class GameSprites:
 
             print("In sprites. Coords = ", coords)
             hero = Hero(
-                self.images[player[1]],
+                self.images["characters"][player[1]],
                 coords,
                 player[1],
                 player[0],
@@ -135,7 +140,7 @@ class GameSprites:
             self.heroes_grp.add(hero)
 
     def init_pathfinder(self):
-        """Init the pathfinder."""
+        """Initialize the pathfinder."""
         good_hero = None
         others = []
 
@@ -149,7 +154,7 @@ class GameSprites:
         self.pathfinder = PathfindingGroup(img, good_hero, others)
 
     def init_transform_paths(self):
-        """Init."""
+        """Initialize the transform group sprite."""
         good_hero = None
         others = []
 

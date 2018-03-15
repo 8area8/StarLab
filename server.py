@@ -101,7 +101,8 @@ class BaseServer:
 
         elif self._server.go_to == 'game_server':
             _map = self._server._map
-            self._server = GameServer(self._server.connection, _map)
+            self._server = GameServer(self._server.connection, _map,
+                                      self._server.turn)
 
         elif self._server.go_to == 'default':
             self._server = SimpleServer(self._socket, self.clients_sockets)

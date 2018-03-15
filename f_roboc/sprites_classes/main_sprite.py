@@ -9,7 +9,7 @@ class MainSprite(pygame.sprite.Sprite):
     Contains a lot of preconfigured methods.
     """
 
-    def __init__(self):
+    def __init__(self, hero=False):
         """Initialize the class."""
         super().__init__()
 
@@ -18,7 +18,8 @@ class MainSprite(pygame.sprite.Sprite):
 
         # IMAGES
         self.image = NotImplemented
-        self.images = None
+        if not hero:
+            self.images = None
         self._no_image = pygame\
             .Surface([1, 1], pygame.SRCALPHA, 32)\
             .convert_alpha()
@@ -94,16 +95,23 @@ class MainSprite(pygame.sprite.Sprite):
         """
         self._index = (self._index + 1) % len(self.images)
 
-    def _set_ping_pong_index(self):
+    def return_len_images(self):
+        """Simply return len of self.images."""
+        return len(self.images) - 1
+
+    def _set_ping_pong_index(self, len_img=None):
         """Set a 'ping pong' index.
 
         It's a loop:
         - index increases by 1 if it's lower than images lenght,
         - then index decrease by 1 if it's greater than 0.
         """
+        if not len_img:
+            len_img = self.return_len_images()
+
         if self._ping_pong == 'ping':
 
-            if self._index == len(self.images) - 1:
+            if self._index == len_img:
                 self._ping_pong = 'pong'
             else:
                 self._index += 1
@@ -180,7 +188,7 @@ class ButtonPlusClick(Button):
     """
 
     def __init__(self, pushed_image, active_image, passive_image,
-                 coords, name, max_timer=100):
+                 coords, name, max_timer=400):
         """Initialize the class."""
         super().__init__(active_image, passive_image, coords, name)
 
@@ -213,12 +221,13 @@ class ButtonGame(ButtonPlusClick):
     def __init__(self, pushed_image, active_image, passive_images,
                  broken_image, coords, name, max_timer=100):
         """Initialize the class."""
-        super().__init__(pushed_image, active_image, passive_images,
+        super().__init__(pushed_image, active_image, None,
                          coords, name, max_timer)
 
-        self._passive_images = passive_images
+        self.images = passive_images
         self._broken_image = broken_image
-        self.image = self._passive_images[self._index]
+        self.image = self.images[self._index]
+        self._maxi_timer = max_timer
 
     def update(self, active_turn):
         """Update the sprite.
@@ -231,16 +240,19 @@ class ButtonGame(ButtonPlusClick):
         """
         if self.activated:
             self.image = self._pushed_image
-            self._call_method_after_timer(self.desactivate, self._max_timer)
+            self._call_method_after_timer(self.desactivate)
             return
 
         if not active_turn:
             self.image = self._broken_image
             return
 
-        self._set_ping_pong_index()
+        self._refresh_timer()
+        if self._current_time >= self._maxi_timer:
+            self._refresh_timer(set_zero=True)
+            self._set_ping_pong_index()
 
         if self.overflew:
             self.image = self._active_image
         else:
-            self.image = self._passive_images[self._index]
+            self.image = self.images[self._index]
