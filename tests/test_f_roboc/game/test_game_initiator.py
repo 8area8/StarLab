@@ -17,6 +17,7 @@ class TestGameInit(unittest.TestCase):
         We start with a server thread,
         and a list of two game_initiators (2 players).
         """
+
         _map = ('...      O   OO   .OQ'
                 'O OOOOOO         O OQ'
                 'O O    OOOOOOOOO  OOQ'
@@ -30,8 +31,10 @@ class TestGameInit(unittest.TestCase):
 
         self.server = Server()
 
-        player_one = GameInitiator(ServerConnection(), _map, 2, True)
-        player_two = GameInitiator(ServerConnection())
+        player_one = GameInitiator(
+            [1], ServerConnection(), _map, 2, True)
+        player_two = GameInitiator(
+            [1], ServerConnection())
         self.players = [player_one, player_two]
 
         for player in self.players:
@@ -45,7 +48,7 @@ class TestGameInit(unittest.TestCase):
         time.sleep(0.3)
         self.players[1].connection.send('joining_game')
 
-        for x in range(10):
+        for x in range(3):
             for player in self.players:
                 player.transfer_datas()
 
