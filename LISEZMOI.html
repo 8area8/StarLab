@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Untitled</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="starlab">STARLAB</h1>
+<p><img src="https://i.imgur.com/fJxNPJi.png" alt="Alt"></p>
+<blockquote>
+<p>Le menu principal du jeu!</p>
+</blockquote>
+<h2 id="coucou">1 Coucou!</h2>
+<p>Bonnnnjour à tous!<br>
+Vous n’imaginez même pas la satisfaction que j’ai à cet instant. J’ai commencé le projet en septembre dernier dans le cadre de ce tuto, voulant partager quelque chose de plus ‘gros’ que ce qui était demandé.</p>
+<p>je me suis attaqué à trop gros… Vraiment, travailler aussi longtemps sur un projet (un exercice en plus), c’est extrêmement <strong>démotivant</strong>. J’ai eu des mois à vide où je ne programmais plus du tout, des journées où je pataugeais et ne faisais rien…<br>
+Mais bon c’est enfin là et c’est finit!</p>
+<blockquote>
+<p>Sinon rien à voir mais je viens de découvrir un super logiciel de capture d’écran (<em>gratuis</em>), qui reconnait tout seul les zones d’images à capturer et les envoi direct sur un hébergeur d’image, c’est beau, c’est magique <a href="http://puush.me/">et c’est ici!</a></p>
+</blockquote>
+<p>Je disais donc… J’ai enfin finis ce projet. J’ai utilisé <strong>Pygame</strong> comme librairie externe pour programmer le jeu en fenêtré, crée les images une à une, et j’avais pour projet de créer les sons aussi, puis je me suis souvenu que mon but premier était <em>d’apprendre à programmer</em>, donc pas de sons.</p>
+<p>Je sais que ce projet dépasse clairement les directives de l’exercice proposé dans ce tutoriel. J’ai voulu me faire plaisir et vous faire partager quelque chose de différent.<br>
+J’espère d’ailleurs que vous prendrez un peu de plaisir à découvrir ce petit jeu. :)</p>
+<h2 id="les-prérequis">2 Les prérequis</h2>
+<p><img src="https://media.giphy.com/media/cALkoAIov3Y9a/giphy.gif" alt="Alt"><br>
+Alors je commence par les choses qui fâchent, parce que c’est relou, ça ne va pas vous faire plaisir mais mon projet demande quelque prérequis.</p>
+<h3 id="python-3.6">python 3.6+</h3>
+<p>Ouai bon en même temps, je vis avec mon époque ein. :P<br>
+J’aime trop les <a href="https://www.pydanny.com/python-f-strings-are-fun.html">f-string</a>, et c’est une feature de la <strong>3.6</strong>, Voila tout.</p>
+<p>J’éspère franchement que vous savez gérer les différentes versions de python sur votre ordinateur parce que moi je galère x1000, et ça change en plus d’un système d’exploitation à l’autre, et d’une console de commande à l’autre.</p>
+<p>C’est une des choses les plus <strong>horribles</strong> en python!<br>
+J’utilise pour ma part le shell bash de <a href="https://gitforwindows.org/">git for windows</a>, qui simule le shell Bash de linux avec ses mots clé type. Dans ce shell je peux, si j’ai plusieurs versions de python en même temps, demander à lancer le programme avec une version spécifique:</p>
+<pre><code>py -3.6 nomDuFichier.py
+</code></pre>
+<p>Et le mieux c’est de savoir utiliser <a href="https://makina-corpus.com/blog/metier/2015/bien-configurer-son-environnement-de-developpement-python">pyvenv</a>, encore une chose que je ne maîtrise pas mais je vais m’empresser de lire ce lien que je viens de trouver après l’écriture de ce lisez-moi, ça a l’air d’être très bon et concis!</p>
+<h3 id="pygame">Pygame</h3>
+<p><img src="https://jeux.developpez.com/tutoriels/Pygame/images/pygame_logo.gif" alt="Alt"></p>
+<p>Bon là vous ne pourrez pas y échapper, à coup de:</p>
+<blockquote>
+<p>pip install pygame</p>
+</blockquote>
+<p>Et le tour est joué.</p>
+<h3 id="moviepy">Moviepy</h3>
+<p><img src="https://zulko.github.io/moviepy/_images/logo.png" alt="Alt"><br>
+Utilisé pour jouer ma cinématique au lancement du programme.</p>
+<blockquote>
+<p>pip install moviepy</p>
+</blockquote>
+<p>Ou sinon, vous allez dans:</p>
+<blockquote>
+<p>/f_roboc/introduction/introduction.py</p>
+</blockquote>
+<p>Et vous verrez dans l’initialisation de la classe la variable <code>self._play_movie = True</code>. Mettez <code>False</code> à la place et vous n’aurez plus besoin de moviepy.<br>
+Vous pouvez toujours voir la cinematique dans le dossier introduction, c’est le fichier <code>movie.mp4</code>.</p>
+<p>Pour ceux qui ont installé moviepy, lors du premier lancement de mon jeu un sous-module s’installera, ce sera peut être un peu long mais voila, vous serez prévenu. ^^’</p>
+<h3 id="english-please">English please!</h3>
+<p><img src="http://www.splyon.fr/wp-content/uploads/2017/12/i-want-you-to-speak-english-bs-base_1.png" alt="Alt"><br>
+Je code en anglais, et je documente (<em>depuis la troisième réécriture de ce jeu</em>) en anglais! J’ai un petit niveau en anglais donc même pour moi c’est galère, mais faut s’y habituer, le monde de la programmation est un monde anglophone. :/<br>
+Vous verrez peut être quelques fautes d’anglais d’ailleurs.</p>
+<blockquote>
+<p>Si vous avez le courage de lire tous les fichiers de code, vous remarquerez que certains ont une documentation en français. C’est parce que je ne les ai pas retouchés depuis un moment et avant j’écrivais mes docs en français.</p>
+</blockquote>
+<hr>
+<p>Si vous avez lu jusqu’ici, vous avez le minimum pour juger mon projet.<br>
+Peut être que vous n’aurez pas envie d’installer tout ça, que ça vous énerve de devoir aller aussi loin pour cet exercice. Je vous comprendrais et dans ce cas là, mettez la note que vous voulez, je sais bien que j’ai pris des risques.</p>
+<h2 id="jouer-au-jeu">3 Jouer au jeu</h2>
+<p>Je ne vais pas m’attarder sur cette partie, mais je vais juste vous dire comment y jouer:</p>
+<ul>
+<li>lancez <code>roboc.py</code>. Une fois dans le menu principal, cliquez sur <code>commencer</code>.<br>
+<img src="https://i.imgur.com/8Oez97b.png" alt="Alt"><br>
+Vous voila à l’écran de sélection de niveaux. Vous ne pouvez pas sélectionner de niveaux car le serveur n’est pas démarré.</li>
+<li>lancez <code>server.py</code>.<br>
+<img src="https://i.imgur.com/nbKfxbI.png" alt="Alt"><br>
+Voila, le serveur reçoit en permanence (<em>tout les dixièmes de secondes</em>) des messages de notre client.</li>
+<li>notre client a une autre gueule, ont peut sélectionner une map. Les deux disponibles sont les deux même avec des spawners différents (j’en reparlerai dans la partie suivante).<img src="https://i.imgur.com/8gPNwTg.png" alt="Alt"></li>
+<li>Cliquez sur une carte (<em>la première est mieux, l’autre était pour les testes de collisions de héros, et a donc moins de spawners</em>).</li>
+<li>Vous voila dans l’écran d’attente!<br>
+<img src="https://i.imgur.com/CnlOlnb.png" alt="Alt"><br>
+Là vous ne pouvez rien faire de plus pour l’instant.</li>
+<li>Ouvrez un autre client en cliquant sur <code>roboc.py</code>!<br>
+<img src="https://i.imgur.com/8dUjnjT.png" alt="Alt"><br>
+Magie! le bouton <code>rejoindre</code>est maintenant actif. Vous savez à quoi je pense, bewi allez-y cliquez! :p<br>
+<img src="https://i.imgur.com/HW8yn0V.png" alt="Alt"><br>
+Beaucoup d’informations ici. Les boutons de gauche n’ont pas été programmés. La boîte de message à droite non plus.</li>
+<li>Vous avez 2 clients différents retournant la même fenêtre. Chaque client possède son propre personnage (<em>le premier ouvert contrôle l’astronaute, le second contrôle l’alien</em>).</li>
+<li>Chaque tour se joue en <strong>10 secondes maximum</strong>. Vous voyez la jauge de temps au milieu se remplir petit à petit. Cliquer sur <code>Fin du tour</code>terminera le tour du personnage plus tôt.</li>
+<li>Quand le tour d’un personnage est passé, vous ne pouvez rien faire sur son écran et tout est grisé.</li>
+<li>Lorsque le tour est actif, vous pouvez: <strong>bouger</strong> (3 points de mouvement par personnage par tour), utiliser votre <strong>pouvoir de transformation</strong> (pour changer un bloc en un autre), ou <strong>terminer votre tour plus rapidement</strong> (fin du tour).</li>
+<li>pour bouger, c’est intuitif pointez votre souris vers des cases adjacents au héro.<img src="https://i.imgur.com/X9Jqdn4.png" alt="Alt"></li>
+</ul>
+<blockquote>
+<p>Les cases bleues sont des cases de mouvement.</p>
+</blockquote>
+<ul>
+<li>Cliquez sur la case bleu et vous vous déplacerez.</li>
+<li>Pour utiliser votre pouvoir de transformation, cliquez sur le gros bouton rouge à gauche de <code>Fin du tour</code>:</li>
+<li><img src="https://i.imgur.com/gfoA8Fo.png" alt="Alt"></li>
+</ul>
+<blockquote>
+<p>les cases vertes sont les cases que l’ont peut transformer.</p>
+</blockquote>
+<ul>
+<li>Cliquez ensuite sur une case verte pour lancer l’animation. Cliquez n’importe où ailleurs pour sortir de cette vision, et pouvoir vous déplacer.<br>
+-Le but est d’arriver au vaisseau spatial (la sortie!):<br>
+<img src="https://i.imgur.com/5wJkrZj.png" alt="Alt"></li>
+</ul>
+<blockquote>
+<p>Bravo vous êtes trop fort!</p>
+</blockquote>
+<p>Et voila. J’ai pas fait de portes mais j’ai crée des téléporteurs, <strong>finissez votre mouvement dessus</strong> et vous vous téléporterez vers l’autre téléporteur.<br>
+<img src="https://media.giphy.com/media/ui1hpJSyBDWlG/giphy.gif" alt="Alt"></p>
+<h2 id="la-notation">4 la notation</h2>
+<p><img src="https://www.langtra.be/wp-content/uploads/2017/02/Pr%C3%A9paration-examen-toeic-toefl-690x270.jpg" alt="Alt"></p>
+<p>Bawey j’ai pas tout fait comme demandé, du coup:</p>
+<ul>
+<li><strong>Serveur ou client premier</strong>, ça c’est pas important car le jeu demandera quand même le serveur si on veut lancer la partie. A noter que le serveur est très stable, il ne crashera pas si ont quitte un client en cours de jeu, mais il se réinitialisera (merci les blocks de code  <code>try: except:</code>). Pour les clients, c’est si ont quitte le serveur <em>normalement</em> il reviennent au menu principal avec un message d’erreur tout beau, mais parfois ils seront bloqués en jeu.</li>
+<li>pour la <strong>précision de la carte: c’est bon</strong>. Je n’affiche par contre que 5 cartes maximum (<em>parce que j’allais pas passer ma vie à programmer un truc parfait :D</em>). Les cartes possèdent certaines règles pour être validés par le jeu (et donc importés). Bon je pense pas que vous allez vous amuser à en créer donc je ne vous les donne pas, mais vous pouvez faire un tour dans le fichier <code>maps_importation.py</code> dans <code>f_roboc/select_level/</code> pour vous faire une idée.</li>
+<li><strong>placement aléatoire du robot</strong>. J’ai voulu aller plus loin: j’ai crée des zones de placement (spawners en anglais) dans la carte même. Elles sont représentés par des points “<code>.</code>”. Ensuite le programme choisis de placer les héros en fonction de ces zones.</li>
+<li><strong>murer/percer une porte</strong>. Bon là comme vous l’avez vu précédemment, c’est fait.</li>
+<li>La <strong>gestion du mouvement</strong> est adapté à ce type de jeu, et j’ai limité le déplacement à 3 cases. C’est un choix personnel, pour créer quelque chose de plus équilibré.</li>
+<li><strong>la documentation</strong>. Tout est documenté, avec plus ou moins de précisions c’est sure.</li>
+<li><strong>la pertinence des tests</strong>. Hahaha on y vient à ces tests! Déjà lancez cette commande depuis la racine du projet: <code>py -m unittest</code> car j’ai tout mis dans un dossier à part et si vous faites pas ça les imports vont ch*** à base d’exceptions. Ensuite j’ai utilisé des threads pour simuler le serveur ou le client, ça m’a beaucoup aidé… Mais à la fin j’utilisais plus souvent <a href="http://sametmax.com/debugger-en-python-les-bases-de-pdb/">pdb</a> ou des tests manuels. Donc j’ai pas tout testé. Il fallait que je finisse le projet, je ne pouvais pas passer 1 mois de plus dessus. Ceci dit j’ai testé mes modules du dossier <code>constants</code> et ça, ça m’a été très très utile. Au final même, je sais que j’utiliserai <a href="http://sametmax.com/se-simplifier-les-tests-python-avec-pytest/">pytest</a> la prochaine fois, en appliquant le <a href="https://openclassrooms.com/courses/testez-un-projet-python/decouvrez-le-test-driven-development">test drivent developpement</a> que j’aime beaucoup beaucoup!</li>
+<li><strong>lisibilité et découpage du projet</strong>. Le projet est archi-découpé vous en conviendrez. La lisibilité n’est pas toujours au top je l’avoue, j’ai fait en sorte d’être le plus claire possible (<em>j’ai re-factorisé entièrement le projet 2 fois</em>) mais certaines méthodes sont un peu compliqués.</li>
+<li><strong>Ouverture à l’amélioration</strong>. Normalement oui, j’ai bien découpé le projet pour ça.</li>
+</ul>
+<p>Voila pour <s>l’autocritique</s> l’explication sur mes choix vis à vis de la notation.<br>
+<img src="https://media.giphy.com/media/GCvktC0KFy9l6/giphy.gif" alt="Alt"></p>
+<blockquote>
+<p>Oui j’aime bien les images…</p>
+</blockquote>
+<h2 id="le-reste">4 Le reste</h2>
+<p>Non là franchement, j’en peux plus d’écrire. Je vous donne le lien sur mon ancien jeu (qui se base sur le premier exercice de ce tutoriel!), où j’explique plus précisément le fonctionnement de pygame. C’est très concis et certainement pas la meilleure explication, mais vous aurez au moins une idée de comment ça marche. La différence de plus est que mon projet est encore plus découpé, avec une vrai arborescence (et qu’il n’y a pas de gestion de la caméra).<br>
+<a href="https://github.com/8area8/Mysterious_labyrinth">le projet en question</a></p>
+<p>et <a href="https://github.com/8area8/StarLab-v2">ce projet sur mon pofil github</a></p>
+<p>Donc voila, bonne correction. :)<br>
+<img src="https://media.giphy.com/media/yoJC2El7xJkYCadlWE/giphy.gif" alt="Alt"></p>
+<blockquote>
+<p>Written with <a href="https://stackedit.io/">StackEdit</a>.</p>
+</blockquote>
+</div>
+</body>
+
+</html>
