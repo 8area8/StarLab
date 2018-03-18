@@ -59,6 +59,7 @@ def _check_if_create_or_join_the_game(interface, connection, images):
 
     if he creates the game (from SelectLevel), some parameters will be added.
     He can join a game (from MainMenu), if another client has created a game.
+
     """
     if isinstance(interface, MainMenu):
         return GameInitiator(images, connection)

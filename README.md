@@ -20,6 +20,7 @@ J'espère d'ailleurs que vous prendrez un peu de plaisir à découvrir ce petit 
 
 ## 2 Les prérequis
 ![Alt](https://media.giphy.com/media/cALkoAIov3Y9a/giphy.gif)
+
 Alors je commence par les choses qui fâchent, parce que c'est relou, ça ne va pas vous faire plaisir mais mon projet demande quelque prérequis.
 
 ### python 3.6+
@@ -103,6 +104,7 @@ Beaucoup d'informations ici. Les boutons de gauche n'ont pas été programmés. 
 > Bravo vous êtes trop fort!
 
 Et voila. J'ai pas fait de portes mais j'ai crée des téléporteurs, **finissez votre mouvement dessus** et vous vous téléporterez vers l'autre téléporteur.
+
 ![Alt](https://media.giphy.com/media/ui1hpJSyBDWlG/giphy.gif)
 
 ## 4 la notation
@@ -121,6 +123,7 @@ Bawey j'ai pas tout fait comme demandé, du coup:
  - **Ouverture à l'amélioration**. Normalement oui, j'ai bien découpé le projet pour ça.
  
  Voila pour ~~l'autocritique~~ l'explication sur mes choix vis à vis de la notation.
+
  ![Alt](https://media.giphy.com/media/GCvktC0KFy9l6/giphy.gif)
 > Oui j'aime bien les images...
 
@@ -132,6 +135,7 @@ Non là franchement, j'en peux plus d'écrire. Je vous donne le lien sur mon anc
 et [ce projet sur mon pofil github](https://github.com/8area8/StarLab-v2)
 
 Donc voila, bonne correction. :)
+
 ![Alt](https://media.giphy.com/media/yoJC2El7xJkYCadlWE/giphy.gif)
 
 > Written with [StackEdit](https://stackedit.io/).

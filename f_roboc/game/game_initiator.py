@@ -56,7 +56,7 @@ class GameInitiator(Interface):
 
     @Interface._secured_connection
     def transfer_datas(self):
-        """Data communication."""
+        """Datas communication."""
         self.clock.tick(10)
 
         msg = self.connection.receive()

@@ -1,4 +1,4 @@
-"""This module contains the color's treatment for some game's sprites."""
+"""Contains the color's treatment for some game's sprites."""
 
 WHITE = (255, 241, 232, 255)
 BLUE = (41, 173, 255, 255)

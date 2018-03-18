@@ -15,7 +15,7 @@ class Game(Interface):
     """
 
     def __init__(self, images, connection, players, _map, turn_digit):
-        """Initialization of the class."""
+        """Initialize the class."""
         super().__init__()
 
         # GAME'S MAP
